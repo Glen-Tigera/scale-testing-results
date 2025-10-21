@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: addon-fake-nodes
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: addon-fake-nodes
+  namespace: addon-fake-nodes
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: addon-fake-nodes
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: addon-fake-nodes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: addon-fake-nodes
+subjects:
+  - kind: ServiceAccount
+    name: addon-fake-nodes
+    namespace: addon-fake-nodes
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: addon-fake-nodes
+  labels:
+    app: addon-fake-nodes
+  namespace: addon-fake-nodes
+spec:
+  podManagementPolicy: Parallel
+  serviceName: addon-fake-nodes
+  replicas: 500
+  selector:
+    matchLabels:
+      app: addon-fake-nodes
+  template:
+    metadata:
+      labels:
+        app: addon-fake-nodes
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+        - name: mocklet
+          image: gcr.io/unique-caldron-775/lwr/mocklet:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 50m
+              memory: 75Mi
+            limits:
+              cpu: 50m
+          ports:
+            - containerPort: 80
+          env:
+            - name: DEFAULT_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_CPU
+              value: "200"
+            - name: NODE_MEMORY
+              value: "500Gi"
+            - name: NUMBER_OF_PODS
+              value: "10000"
+            - name: FIRST_IP
+              value: "47.0.0.0"
+        - name: mock-calico-node
+          image: gcr.io/unique-caldron-775/cnx/tigera/mock-node:release-calient-v3.20
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 250Mi
+            limits:
+              cpu: 50m
+          env:
+          - name: DATASTORE_TYPE
+            value: kubernetes
+          - name: NODENAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: FIPS_MODE_ENABLED
+            value: "false"
+          volumeMounts:
+          - mountPath: /etc/pki/tls/certs
+            name: tigera-ca-bundle
+            readOnly: true
+          - mountPath: /etc/pki/tls/cert.pem
+            name: tigera-ca-bundle
+            readOnly: true
+            subPath: ca-bundle.crt
+          - mountPath: /node-certs
+            name: node-certs
+            readOnly: true
+      serviceAccountName: addon-fake-nodes
+      serviceAccount: addon-fake-nodes
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: tigera-pull-secret
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: tigera-ca-bundle
+        name: tigera-ca-bundle
+      - name: node-certs
+        secret:
+          defaultMode: 420
+          secretName: node-certs

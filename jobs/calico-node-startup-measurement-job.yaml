@@ -1,0 +1,150 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-startup-tester
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: calico-startup-tester
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "delete", "watch"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: calico-startup-tester
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calico-startup-tester
+subjects:
+- kind: ServiceAccount
+  name: calico-startup-tester
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calico-startup-test-script
+  namespace: default
+data:
+  measure_calico_node_pod_startup.sh: |
+    #!/bin/bash
+    set -e
+
+    # Configuration
+    export NAMESPACE="${NAMESPACE:-calico-system}"
+    export LABEL_SELECTOR="${LABEL_SELECTOR:-k8s-app=calico-node}"
+    export NODE_NAME="${NODE_NAME}"
+    export ACCEPTABLE_START_UP_TIME="${ACCEPTABLE_START_UP_TIME:-60}"
+
+    # Validate NODE_NAME is set
+    if [ -z "$NODE_NAME" ]; then
+      echo "ERROR: NODE_NAME environment variable must be set"
+      exit 1
+    fi
+
+    echo "=== Calico Node Startup Time Measurement ==="
+    echo "Namespace: $NAMESPACE"
+    echo "Label Selector: $LABEL_SELECTOR"
+    echo "Target Node: $NODE_NAME"
+    echo "Acceptable Startup Time: ${ACCEPTABLE_START_UP_TIME}s"
+    echo ""
+
+    # Find the pod running on the specified node
+    OLD_POD=$(kubectl get pods -n $NAMESPACE -l "$LABEL_SELECTOR" -o json | jq -r ".items[] | select(.spec.nodeName==\"$NODE_NAME\") | .metadata.name")
+    if [ -z "$OLD_POD" ]; then
+      echo "ERROR: No DaemonSet pod found on node $NODE_NAME"
+      exit 1
+    fi
+
+    echo "Found pod: $OLD_POD on node $NODE_NAME"
+    echo "Deleting pod $OLD_POD..."
+    kubectl delete pod $OLD_POD -n $NAMESPACE
+
+    # Wait for a new pod to appear on the same node
+    echo "Waiting for new pod on node $NODE_NAME..."
+    while true; do
+      NEW_POD=$(kubectl get pods -n $NAMESPACE -l "$LABEL_SELECTOR" -o json | jq -r ".items[] | select(.spec.nodeName==\"$NODE_NAME\") | .metadata.name")
+      if [[ "$NEW_POD" != "$OLD_POD" && -n "$NEW_POD" ]]; then
+        echo "New pod detected: $NEW_POD"
+        break
+      fi
+      sleep 1
+    done
+
+    # Get the new pod creation time
+    START_TIME=$(kubectl get pod $NEW_POD -n $NAMESPACE -o jsonpath="{.metadata.creationTimestamp}")
+    START_EPOCH=$(date -d "$START_TIME" +%s)
+    echo "Pod created at: $START_TIME (epoch: $START_EPOCH)"
+
+    # Wait for pod to be Ready
+    echo "Waiting for pod $NEW_POD to become Ready..."
+    kubectl wait --for=condition=Ready pod/$NEW_POD -n $NAMESPACE --timeout=300s
+
+    READY_EPOCH=$(date +%s)
+    DURATION=$((READY_EPOCH - START_EPOCH))
+
+    echo ""
+    echo "========================================"
+    echo "DaemonSet pod $NEW_POD became Ready in $DURATION seconds."
+    echo "Calico-node startup time: ${DURATION}s"
+    echo "========================================"
+    echo ""
+
+    if [ $DURATION -ge $ACCEPTABLE_START_UP_TIME ]; then
+      echo "❌ FAILURE: $NEW_POD startup took too long ($DURATION seconds) and failed to meet $ACCEPTABLE_START_UP_TIME second startup time requirement."
+      exit 1
+    else
+      echo "✅ SUCCESS: $NEW_POD startup time is within the acceptable range ($DURATION seconds < ${ACCEPTABLE_START_UP_TIME}s)"
+      exit 0
+    fi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: calico-node-startup-test
+  namespace: default
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600  # Job and pods will be automatically deleted 10 minutes after completion
+  template:
+    metadata:
+      labels:
+        app: calico-startup-test
+    spec:
+      serviceAccountName: calico-startup-tester
+      restartPolicy: Never
+      containers:
+      - name: tester
+        image: bitnami/kubectl:latest
+        command: ["/bin/bash"]
+        args: ["/scripts/measure_calico_node_pod_startup.sh"]
+        env:
+        # REQUIRED: Set the node name where you want to test calico-node startup
+        - name: NODE_NAME
+          value: "glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+        # OPTIONAL: Override these if needed
+        - name: NAMESPACE
+          value: "calico-system"
+        - name: LABEL_SELECTOR
+          value: "k8s-app=calico-node"
+        - name: ACCEPTABLE_START_UP_TIME
+          value: "60"
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+      volumes:
+      - name: script
+        configMap:
+          name: calico-startup-test-script
+          defaultMode: 0755
+

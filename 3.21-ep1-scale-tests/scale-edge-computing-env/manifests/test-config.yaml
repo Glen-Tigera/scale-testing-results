@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+  specification.yaml: |
+    spec:
+      # Number of namespaces to use. We pick 13 namespaces so that
+      # we can evenly distribute the server and client deployments
+      # across these namespaces.
+      numNamespaces:  13
+      # Configure the number of servers - two per namespace.
+      numServerDeployments: 26
+      podsPerServer: 4
+      # Configure the number of clients - two per server deployment.
+      numClientDeployments: 52
+      podsPerClient: 4
+      # Client configuration.
+      clients:
+        image: gcr.io/unique-caldron-775/ttfp:v0.12.0
+        imagePullPolicy: IfNotPresent
+        protocol: tcp
+        numChurns: 999999999
+        churnTimeout: 3600000000000
+        maxUnavailable: 1
+        nodeSelector:
+          cloud.google.com/gke-nodepool: default-pool
+      # Server configuration.
+      servers:
+        image: nginx:1.19.6
+        imagePullPolicy: IfNotPresent
+        numChurns: 999999999
+        churnTimeout: 3600000000000
+        maxUnavailable: 1
+        nodeSelector:
+          cloud.google.com/gke-nodepool: default-pool
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+kind: ConfigMap
+metadata:
+  name: test-operator
+  namespace: sto-system

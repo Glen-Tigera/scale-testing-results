@@ -1,0 +1,344 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: addon-live-policies
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-0
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep0
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep0
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-1
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep0
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep0
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-2
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep0
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep0
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-3
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep0
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep0
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-4
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep1
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep1
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-5
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep1
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep1
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-6
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep1
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep1
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-7
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep1
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep1
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-8
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep2
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep2
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-9
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep2
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep2
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-10
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep2
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep2
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-11
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep2
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep2
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-12
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep3
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep3
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-13
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep3
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep3
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-14
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep3
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep3
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-15
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep3
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep3
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-16
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep4
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep4
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-17
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep4
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep4
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-18
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep4
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep4
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy-19
+  namespace: addon-live-policies
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-dep4
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-dep4

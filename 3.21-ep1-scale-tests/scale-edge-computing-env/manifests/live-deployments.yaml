@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: addon-live-policies
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-dep0
+    svc: nginx
+  name: nginx-dep0
+  namespace: addon-live-policies
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nginx-dep0
+      svc: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx-dep0
+        svc: nginx
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-dep2
+    svc: nginx
+  name: nginx-dep2
+  namespace: addon-live-policies
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nginx-dep2
+      svc: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx-dep2
+        svc: nginx
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-dep1
+  name: nginx-dep1
+  namespace: addon-live-policies
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: nginx-dep1
+  template:
+    metadata:
+      labels:
+        app: nginx-dep1
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-dep3
+  name: nginx-dep3
+  namespace: addon-live-policies
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: nginx-dep3
+  template:
+    metadata:
+      labels:
+        app: nginx-dep3
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet

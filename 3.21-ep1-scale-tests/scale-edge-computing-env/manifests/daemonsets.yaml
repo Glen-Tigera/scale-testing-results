@@ -1,0 +1,253 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: addon-live-policies
+---
+# Here we have deployments to set up the pods on the REAL nodes.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds0
+  name: nginx-ds0
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds0
+  template:
+    metadata:
+      labels:
+        app: nginx-ds0
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds1
+  name: nginx-ds1
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds1
+  template:
+    metadata:
+      labels:
+        app: nginx-ds1
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds2
+  name: nginx-ds2
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds2
+  template:
+    metadata:
+      labels:
+        app: nginx-ds2
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds3
+  name: nginx-ds3
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds3
+  template:
+    metadata:
+      labels:
+        app: nginx-ds3
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds4
+  name: nginx-ds4
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds4
+  template:
+    metadata:
+      labels:
+        app: nginx-ds4
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+---
+# Here we have deployments to set up the pods on the FAKE nodes.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds0
+  name: nginx-ds0-fake
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds0
+  template:
+    metadata:
+      labels:
+        app: nginx-ds0
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds1
+  name: nginx-ds1-fake
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds1
+  template:
+    metadata:
+      labels:
+        app: nginx-ds1
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds2
+  name: nginx-ds2-fake
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds2
+  template:
+    metadata:
+      labels:
+        app: nginx-ds2
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds3
+  name: nginx-ds3-fake
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds3
+  template:
+    metadata:
+      labels:
+        app: nginx-ds3
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: nginx-ds4
+  name: nginx-ds4-fake
+  namespace: addon-live-policies
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds4
+  template:
+    metadata:
+      labels:
+        app: nginx-ds4
+    spec:
+      containers:
+      - image: bitnami/nginx:1.18
+        name: nginx
+      tolerations:
+        - key: "mocklet.io/provider"
+          operator: "Equal"
+          value: "mock"
+          effect: "NoSchedule"
+      nodeSelector:
+        type: mocklet
