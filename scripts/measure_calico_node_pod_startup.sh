@@ -22,15 +22,76 @@ echo "Acceptable Startup Time: ${ACCEPTABLE_START_UP_TIME}s"
 echo ""
 
 # ============================================
-# Collect Cluster Metrics Before Test
+# Collect Cluster Information
 # ============================================
-echo "=== Collecting Cluster Metrics ==="
+echo "=== Collecting Cluster Information ==="
+
+# Kubernetes Version
+K8S_VERSION=$(kubectl version -o json 2>/dev/null | jq -r '.serverVersion.gitVersion' || echo "Unknown")
+echo "Kubernetes Version: $K8S_VERSION"
+
+# Detect Provisioner
+PROVISIONER="Unknown"
+if kubectl get nodes -o json | jq -r '.items[0].spec.providerID' | grep -q "gce://"; then
+  PROVISIONER="GKE (Google Kubernetes Engine)"
+elif kubectl get nodes -o json | jq -r '.items[0].spec.providerID' | grep -q "aws://"; then
+  PROVISIONER="EKS (Amazon Elastic Kubernetes Service)"
+elif kubectl get nodes -o json | jq -r '.items[0].spec.providerID' | grep -q "azure://"; then
+  PROVISIONER="AKS (Azure Kubernetes Service)"
+else
+  PROVIDER_ID=$(kubectl get nodes -o json | jq -r '.items[0].spec.providerID' 2>/dev/null || echo "")
+  if [ -n "$PROVIDER_ID" ]; then
+    PROVISIONER="$PROVIDER_ID"
+  fi
+fi
+echo "Provisioner: $PROVISIONER"
+
+# Calico Dataplane Configuration from FelixConfiguration
+echo ""
+echo "=== Calico Configuration ==="
+FELIX_CONFIG=$(kubectl get felixconfiguration default -o json 2>/dev/null || echo "")
+if [ -n "$FELIX_CONFIG" ]; then
+  DATAPLANE_MODE=$(echo "$FELIX_CONFIG" | jq -r '.spec.bpfEnabled // empty')
+  if [ "$DATAPLANE_MODE" == "true" ]; then
+    echo "Dataplane Mode: eBPF"
+  else
+    echo "Dataplane Mode: iptables"
+  fi
+  
+  # Additional Felix settings
+  BPF_KUBE_PROXY_MODE=$(echo "$FELIX_CONFIG" | jq -r '.spec.bpfKubeProxyIptablesCleanupEnabled // "N/A"')
+  if [ "$BPF_KUBE_PROXY_MODE" != "N/A" ]; then
+    echo "BPF Kube-Proxy Mode: $BPF_KUBE_PROXY_MODE"
+  fi
+else
+  echo "Dataplane Mode: Unable to retrieve (no default FelixConfiguration found)"
+fi
+
+# Calico Installation Resource for encapsulation type
+INSTALLATION=$(kubectl get installation default -o json 2>/dev/null || echo "")
+if [ -n "$INSTALLATION" ]; then
+  ENCAPSULATION=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].encapsulation // "Unknown"')
+  BACKEND=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.bgp // "Unknown"')
+  IP_POOL_CIDR=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].cidr // "Unknown"')
+  
+  echo "Encapsulation Type: $ENCAPSULATION"
+  echo "BGP Enabled: $BACKEND"
+  echo "IP Pool CIDR: $IP_POOL_CIDR"
+else
+  echo "Encapsulation Type: Unable to retrieve (no Installation resource found)"
+fi
+
+echo ""
+echo "=== Cluster Scale Metrics ==="
 
 TOTAL_NETWORK_POLICIES=$(kubectl get networkpolicies --all-namespaces -o json | jq '.items | length')
 echo "Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
 
 TOTAL_SERVICES=$(kubectl get services --all-namespaces -o json | jq '.items | length')
 echo "Total Services: $TOTAL_SERVICES"
+
+TOTAL_NODES=$(kubectl get nodes -o json | jq '.items | length')
+echo "Total Nodes: $TOTAL_NODES"
 
 echo ""
 echo "Pods per Node:"
@@ -126,12 +187,25 @@ fi
 # Final Results
 # ============================================
 echo "========================================"
-echo "CLUSTER METRICS SUMMARY"
+echo "TEST RESULTS SUMMARY"
 echo "========================================"
-echo "Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
-echo "Total Services: $TOTAL_SERVICES"
-echo "Pods on target node: $PODS_ON_TARGET_NODE"
-echo "Calico-node startup time: ${DURATION}s"
+echo "Cluster Information:"
+echo "  Kubernetes Version: $K8S_VERSION"
+echo "  Provisioner: $PROVISIONER"
+echo "  Total Nodes: $TOTAL_NODES"
+echo ""
+echo "Calico Configuration:"
+echo "  Dataplane Mode: $([ "$DATAPLANE_MODE" == "true" ] && echo "eBPF" || echo "iptables")"
+echo "  Encapsulation: $ENCAPSULATION"
+echo "  BGP Enabled: $BACKEND"
+echo ""
+echo "Cluster Scale:"
+echo "  Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
+echo "  Total Services: $TOTAL_SERVICES"
+echo "  Pods on target node: $PODS_ON_TARGET_NODE"
+echo ""
+echo "Performance:"
+echo "  Calico-node startup time: ${DURATION}s"
 echo "========================================"
 echo ""
 
