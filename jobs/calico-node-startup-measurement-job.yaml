@@ -285,7 +285,7 @@ spec:
             env:
             # REQUIRED: Set the node name where you want to test calico-node startup
             - name: NODE_NAME
-              value: "glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+              value: "glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
             # OPTIONAL: Override these if needed
             - name: NAMESPACE
               value: "calico-system"
