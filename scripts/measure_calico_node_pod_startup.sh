@@ -46,39 +46,25 @@ else
 fi
 echo "Provisioner: $PROVISIONER"
 
-# Calico Dataplane Configuration from FelixConfiguration
+# Calico Configuration from Installation Resource
 echo ""
 echo "=== Calico Configuration ==="
-FELIX_CONFIG=$(kubectl get felixconfiguration default -o json 2>/dev/null || echo "")
-if [ -n "$FELIX_CONFIG" ]; then
-  DATAPLANE_MODE=$(echo "$FELIX_CONFIG" | jq -r '.spec.bpfEnabled // empty')
-  if [ "$DATAPLANE_MODE" == "true" ]; then
-    echo "Dataplane Mode: eBPF"
-  else
-    echo "Dataplane Mode: iptables"
-  fi
-  
-  # Additional Felix settings
-  BPF_KUBE_PROXY_MODE=$(echo "$FELIX_CONFIG" | jq -r '.spec.bpfKubeProxyIptablesCleanupEnabled // "N/A"')
-  if [ "$BPF_KUBE_PROXY_MODE" != "N/A" ]; then
-    echo "BPF Kube-Proxy Mode: $BPF_KUBE_PROXY_MODE"
-  fi
-else
-  echo "Dataplane Mode: Unable to retrieve (no default FelixConfiguration found)"
-fi
-
-# Calico Installation Resource for encapsulation type
 INSTALLATION=$(kubectl get installation default -o json 2>/dev/null || echo "")
 if [ -n "$INSTALLATION" ]; then
+  DATAPLANE_MODE=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.linuxDataplane')
   ENCAPSULATION=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].encapsulation // "Unknown"')
   BACKEND=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.bgp // "Unknown"')
   IP_POOL_CIDR=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].cidr // "Unknown"')
   
+  echo "Dataplane Mode: $DATAPLANE_MODE"
   echo "Encapsulation Type: $ENCAPSULATION"
   echo "BGP Enabled: $BACKEND"
   echo "IP Pool CIDR: $IP_POOL_CIDR"
 else
-  echo "Encapsulation Type: Unable to retrieve (no Installation resource found)"
+  echo "Dataplane Mode: Unable to retrieve (no Installation resource found)"
+  DATAPLANE_MODE="Unknown"
+  ENCAPSULATION="Unknown"
+  BACKEND="Unknown"
 fi
 
 echo ""
@@ -195,7 +181,7 @@ echo "  Provisioner: $PROVISIONER"
 echo "  Total Nodes: $TOTAL_NODES"
 echo ""
 echo "Calico Configuration:"
-echo "  Dataplane Mode: $([ "$DATAPLANE_MODE" == "true" ] && echo "eBPF" || echo "iptables")"
+echo "  Dataplane Mode: $DATAPLANE_MODE"
 echo "  Encapsulation: $ENCAPSULATION"
 echo "  BGP Enabled: $BACKEND"
 echo ""
