@@ -1,0 +1,126 @@
+=== Calico Node Startup Time Measurement ===
+Namespace: calico-system
+Label Selector: k8s-app=calico-node
+Target Node: glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Acceptable Startup Time: 60s
+
+=== Collecting Cluster Information ===
+Kubernetes Version: v1.33.5
+Provisioner: null
+
+=== Calico Configuration ===
+Dataplane Mode: Unable to retrieve (no default FelixConfiguration found)
+Encapsulation Type: IPIP
+BGP Enabled: Enabled
+IP Pool CIDR: 192.168.0.0/16
+
+=== Cluster Scale Metrics ===
+Total NetworkPolicies: 1200
+Total Services: 1033
+Total Nodes: 9
+
+Pods per Node:
+glen-bz-p4b7-kadm-infra-0.us-central1-a.c.tigera-dev.internal: 8 pods
+glen-bz-p4b7-kadm-infra-1.us-central1-a.c.tigera-dev.internal: 10 pods
+glen-bz-p4b7-kadm-infra-2.us-central1-a.c.tigera-dev.internal: 6 pods
+glen-bz-p4b7-kadm-ms.us-central1-a.c.tigera-dev.internal: 15 pods
+glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal: 908 pods
+glen-bz-p4b7-kadm-node-1.us-central1-a.c.tigera-dev.internal: 425 pods
+glen-bz-p4b7-kadm-node-2.us-central1-a.c.tigera-dev.internal: 834 pods
+glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal: 413 pods
+glen-bz-p4b7-kadm-node-4.us-central1-a.c.tigera-dev.internal: 469 pods
+
+Pods on target node (glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal): 908
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-h2kbd
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-h2kbd" deleted from default namespace
+Waiting for new load generator pod...
+pod/loadgenerator-59d7b7cc48-jhsnc condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-jhsnc
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-ztf46 on node glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-ztf46...
+pod "calico-node-ztf46" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-pgz9q
+Pod created at: 2025-10-21T21:16:41Z (epoch: 1761081401)
+Waiting for pod calico-node-pgz9q to become Ready...
+pod/calico-node-pgz9q condition met
+
+========================================
+DaemonSet pod calico-node-pgz9q became Ready in 66 seconds.
+Calico-node startup time: 66s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                137     0(0.00%) |     24      14     122     19 |    1.40        0.00
+GET      /cart                                                                            147     0(0.00%) |     18      10      82     13 |    2.60        0.00
+POST     /cart                                                                            140     0(0.00%) |     30      14      93     19 |    2.20        0.00
+POST     /cart/checkout                                                                    63     0(0.00%) |     66      34     156     62 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                               65     0(0.00%) |     19      10      88     13 |    1.20        0.00
+GET      /product/1YMWWN1N4O                                                               71     0(0.00%) |     16      10      66     13 |    0.80        0.00
+GET      /product/2ZYFJ3GM2N                                                               78     0(0.00%) |     18      10      74     14 |    1.70        0.00
+GET      /product/66VCHSJNUP                                                               62     0(0.00%) |     19      10      59     14 |    1.50        0.00
+GET      /product/6E92ZMYYFZ                                                               60     0(0.00%) |     20      10      93     13 |    1.50        0.00
+GET      /product/9SIQT8TOJO                                                               67     0(0.00%) |     16      10      62     13 |    1.10        0.00
+GET      /product/L9ECAV7KIM                                                               71     0(0.00%) |     14      10      50     13 |    1.10        0.00
+GET      /product/LS4PSXUNUM                                                               85     0(0.00%) |     17      11      97     14 |    2.00        0.00
+GET      /product/OLJCESPC7Z                                                               73     0(0.00%) |     19      11      71     14 |    1.40        0.00
+POST     /setCurrency                                                                      95     0(0.00%) |     29      15     197     20 |    1.40        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1214     0(0.00%) |     23      10     197     16 |   20.80        0.00
+
+[2025-10-21 21:18:16,044] loadgenerator-59d7b7cc48-jhsnc/INFO/locust.runners: All users spawned: {"WebsiteUser": 100} (100 total users)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                140     0(0.00%) |     24      14     122     19 |    1.80        0.00
+GET      /cart                                                                            150     0(0.00%) |     18      10      82     13 |    3.20        0.00
+POST     /cart                                                                            147     0(0.00%) |     30      14      93     19 |    1.90        0.00
+POST     /cart/checkout                                                                    67     0(0.00%) |     66      34     156     63 |    0.50        0.00
+GET      /product/0PUK6V6EV0                                                               67     0(0.00%) |     19      10      88     13 |    1.10        0.00
+GET      /product/1YMWWN1N4O                                                               76     0(0.00%) |     16      10      66     13 |    1.20        0.00
+GET      /product/2ZYFJ3GM2N                                                               81     0(0.00%) |     19      10      74     14 |    1.50        0.00
+GET      /product/66VCHSJNUP                                                               65     0(0.00%) |     18      10      59     14 |    1.40        0.00
+GET      /product/6E92ZMYYFZ                                                               63     0(0.00%) |     20      10      93     14 |    1.10        0.00
+GET      /product/9SIQT8TOJO                                                               69     0(0.00%) |     17      10      81     13 |    1.00        0.00
+GET      /product/L9ECAV7KIM                                                               77     0(0.00%) |     15      10      50     13 |    1.20        0.00
+GET      /product/LS4PSXUNUM                                                               88     0(0.00%) |     17      11      97     14 |    1.70        0.00
+GET      /product/OLJCESPC7Z                                                               79     0(0.00%) |     19      11      74     14 |    1.60        0.00
+POST     /setCurrency                                                                     101     0(0.00%) |     29      15     197     20 |    1.50        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1270     0(0.00%) |     23      10     197     16 |   20.70        0.00
+
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: null
+  Total Nodes: 9
+
+Calico Configuration:
+  Dataplane Mode: iptables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 1200
+  Total Services: 1033
+  Pods on target node: 908
+
+Performance:
+  Calico-node startup time: 66s
+========================================
+
+❌ FAILURE: calico-node-pgz9q startup took too long (66 seconds) and failed to meet 60 second startup time requirement.
+Stream closed EOF for default/calico-test-run-600-pods-per-node-v8mmp (tester)

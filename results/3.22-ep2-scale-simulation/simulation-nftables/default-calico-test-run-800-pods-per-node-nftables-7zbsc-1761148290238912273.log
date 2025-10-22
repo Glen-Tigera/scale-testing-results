@@ -1,0 +1,125 @@
+=== Calico Node Startup Time Measurement ===
+Namespace: calico-system
+Label Selector: k8s-app=calico-node
+Target Node: glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal
+Acceptable Startup Time: 60s
+
+=== Collecting Cluster Information ===
+Kubernetes Version: v1.33.5
+Provisioner: null
+
+=== Calico Configuration ===
+Dataplane Mode: Nftables
+Encapsulation Type: IPIP
+BGP Enabled: Enabled
+IP Pool CIDR: 192.168.0.0/16
+
+=== Cluster Scale Metrics ===
+Total NetworkPolicies: 1200
+Total Services: 1033
+Total Nodes: 9
+
+Pods per Node:
+glen-bz-p4b7-kadm-infra-0.us-central1-a.c.tigera-dev.internal: 12 pods
+glen-bz-p4b7-kadm-infra-1.us-central1-a.c.tigera-dev.internal: 7 pods
+glen-bz-p4b7-kadm-infra-2.us-central1-a.c.tigera-dev.internal: 11 pods
+glen-bz-p4b7-kadm-ms.us-central1-a.c.tigera-dev.internal: 14 pods
+glen-bz-p4b7-kadm-node-0.us-central1-a.c.tigera-dev.internal: 814 pods
+glen-bz-p4b7-kadm-node-1.us-central1-a.c.tigera-dev.internal: 813 pods
+glen-bz-p4b7-kadm-node-2.us-central1-a.c.tigera-dev.internal: 799 pods
+glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal: 822 pods
+glen-bz-p4b7-kadm-node-4.us-central1-a.c.tigera-dev.internal: 805 pods
+
+Pods on target node (glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal): 822
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-p4r5c
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-p4r5c" deleted from default namespace
+Waiting for new load generator pod...
+pod/loadgenerator-59d7b7cc48-49tmc condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-49tmc
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-77b8q on node glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-77b8q...
+pod "calico-node-77b8q" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-p4b7-kadm-node-3.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-wgdlv
+Pod created at: 2025-10-22T15:49:27Z (epoch: 1761148167)
+Waiting for pod calico-node-wgdlv to become Ready...
+pod/calico-node-wgdlv condition met
+
+========================================
+DaemonSet pod calico-node-wgdlv became Ready in 36 seconds.
+Calico-node startup time: 36s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 90     0(0.00%) |     15      10      62     14 |    1.60        0.00
+GET      /cart                                                                             84     0(0.00%) |     12       7      84     10 |    2.20        0.00
+POST     /cart                                                                             64     0(0.00%) |     13      11      23     13 |    1.70        0.00
+POST     /cart/checkout                                                                    23     0(0.00%) |     70      32     172     59 |    0.50        0.00
+GET      /product/0PUK6V6EV0                                                               30     0(0.00%) |     10       8      13     10 |    0.50        0.00
+GET      /product/1YMWWN1N4O                                                               34     0(0.00%) |      9       8      11     10 |    1.20        0.00
+GET      /product/2ZYFJ3GM2N                                                               32     0(0.00%) |     10       8      25     10 |    0.80        0.00
+GET      /product/66VCHSJNUP                                                               38     0(0.00%) |     12       7      66     10 |    0.80        0.00
+GET      /product/6E92ZMYYFZ                                                               40     0(0.00%) |     10       8      13     10 |    1.40        0.00
+GET      /product/9SIQT8TOJO                                                               30     0(0.00%) |     10       7      12     10 |    0.80        0.00
+GET      /product/L9ECAV7KIM                                                               35     0(0.00%) |      9       7      12     10 |    1.00        0.00
+GET      /product/LS4PSXUNUM                                                               25     0(0.00%) |     14       8      99     10 |    0.30        0.00
+GET      /product/OLJCESPC7Z                                                               39     0(0.00%) |      9       8      12     10 |    1.40        0.00
+POST     /setCurrency                                                                      50     0(0.00%) |     14      11      23     14 |    1.40        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       614     0(0.00%) |     14       7     172     11 |   15.60        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 94     0(0.00%) |     15      10      62     14 |    1.50        0.00
+GET      /cart                                                                             86     0(0.00%) |     12       7      84     10 |    2.30        0.00
+POST     /cart                                                                             69     0(0.00%) |     14      11      72     13 |    2.00        0.00
+POST     /cart/checkout                                                                    24     0(0.00%) |     70      32     172     59 |    0.40        0.00
+GET      /product/0PUK6V6EV0                                                               33     0(0.00%) |     10       8      13     10 |    0.80        0.00
+GET      /product/1YMWWN1N4O                                                               37     0(0.00%) |      9       7      11     10 |    1.20        0.00
+GET      /product/2ZYFJ3GM2N                                                               33     0(0.00%) |     10       8      25     10 |    0.80        0.00
+GET      /product/66VCHSJNUP                                                               41     0(0.00%) |     12       7      66     10 |    0.80        0.00
+GET      /product/6E92ZMYYFZ                                                               41     0(0.00%) |     10       8      13     10 |    1.60        0.00
+GET      /product/9SIQT8TOJO                                                               33     0(0.00%) |     11       7      55     10 |    0.70        0.00
+GET      /product/L9ECAV7KIM                                                               38     0(0.00%) |     10       7      38     10 |    0.40        0.00
+GET      /product/LS4PSXUNUM                                                               27     0(0.00%) |     13       8      99     10 |    0.40        0.00
+GET      /product/OLJCESPC7Z                                                               41     0(0.00%) |      9       8      12     10 |    1.20        0.00
+POST     /setCurrency                                                                      50     0(0.00%) |     14      11      23     14 |    1.40        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       647     0(0.00%) |     14       7     172     11 |   15.50        0.00
+
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: null
+  Total Nodes: 9
+
+Calico Configuration:
+  Dataplane Mode: Nftables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 1200
+  Total Services: 1033
+  Pods on target node: 822
+
+Performance:
+  Calico-node startup time: 36s
+========================================
+
+✅ SUCCESS: calico-node-wgdlv startup time is within the acceptable range (36 seconds < 60s)
+Stream closed EOF for default/calico-test-run-800-pods-per-node-nftables-7zbsc (tester)
