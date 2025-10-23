@@ -158,6 +158,7 @@ echo ""
 # ============================================
 # Wait and Collect Load Generator Stats
 # ============================================
+MEDIAN_LATENCY="N/A"
 if [ -n "$NEW_LOADGEN_POD" ]; then
   echo "=== Waiting for Load Generator Statistics ==="
   echo "Waiting 30 seconds for load generator to accumulate stats..."
@@ -165,8 +166,15 @@ if [ -n "$NEW_LOADGEN_POD" ]; then
   
   echo ""
   echo "=== Load Generator Pod-to-Pod Latency Statistics ==="
-  kubectl logs $NEW_LOADGEN_POD -n $LOADGEN_NAMESPACE --tail=50 | grep -A 20 "Type.*Name.*# reqs" || echo "No statistics found yet"
+  LOADGEN_STATS=$(kubectl logs $NEW_LOADGEN_POD -n $LOADGEN_NAMESPACE --tail=50 | grep -A 20 "Type.*Name.*# reqs" || echo "")
+  echo "$LOADGEN_STATS"
   echo ""
+  
+  # Extract median latency from Aggregated row
+  MEDIAN_LATENCY=$(echo "$LOADGEN_STATS" | grep "Aggregated" | awk -F'|' '{print $2}' | awk '{print $4}')
+  if [ -z "$MEDIAN_LATENCY" ]; then
+    MEDIAN_LATENCY="N/A"
+  fi
 fi
 
 # ============================================
@@ -192,6 +200,7 @@ echo "  Pods on target node: $PODS_ON_TARGET_NODE"
 echo ""
 echo "Performance:"
 echo "  Calico-node startup time: ${DURATION}s"
+echo "  Pod-to-Pod Median Latency: ${MEDIAN_LATENCY}ms"
 echo "========================================"
 echo ""
 
