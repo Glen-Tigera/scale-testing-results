@@ -1,0 +1,100 @@
+glen-bz-ct3o-kadm-node-94.us-central1-a.c.tigera-dev.internal: 18 pods
+glen-bz-ct3o-kadm-node-95.us-central1-a.c.tigera-dev.internal: 17 pods
+glen-bz-ct3o-kadm-node-96.us-central1-a.c.tigera-dev.internal: 16 pods
+glen-bz-ct3o-kadm-node-97.us-central1-a.c.tigera-dev.internal: 17 pods
+glen-bz-ct3o-kadm-node-98.us-central1-a.c.tigera-dev.internal: 17 pods
+glen-bz-ct3o-kadm-node-99.us-central1-a.c.tigera-dev.internal: 16 pods
+
+Pods on target node (glen-bz-ct3o-kadm-node-0.us-central1-a.c.tigera-dev.internal): 17
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-zghq4
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-zghq4" deleted from default namespace
+Waiting for new load generator pod...
+pod/loadgenerator-59d7b7cc48-znqfr condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-znqfr
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-spqmr on node glen-bz-ct3o-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-spqmr...
+pod "calico-node-spqmr" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-ct3o-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-bz4rw
+Pod created at: 2025-10-23T17:28:35Z (epoch: 1761240515)
+Waiting for pod calico-node-bz4rw to become Ready...
+pod/calico-node-bz4rw condition met
+
+========================================
+DaemonSet pod calico-node-bz4rw became Ready in 35 seconds.
+Calico-node startup time: 35s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                167     0(0.00%) |     23      12      85     18 |    1.50        0.00
+GET      /cart                                                                            182     0(0.00%) |     16       9      90     13 |    2.40        0.00
+POST     /cart                                                                            202     0(0.00%) |     34      15     117     21 |    2.60        0.00
+POST     /cart/checkout                                                                    77     0(0.00%) |     83      35     235     90 |    1.20        0.00
+GET      /product/0PUK6V6EV0                                                               92     0(0.00%) |     16      10      91     13 |    1.80        0.00
+GET      /product/1YMWWN1N4O                                                               90     0(0.00%) |     19      10     102     14 |    1.00        0.00
+GET      /product/2ZYFJ3GM2N                                                               74     0(0.00%) |     17      10     136     13 |    1.30        0.00
+GET      /product/66VCHSJNUP                                                               85     0(0.00%) |     19      10     102     13 |    1.60        0.00
+GET      /product/6E92ZMYYFZ                                                               93     0(0.00%) |     18       9      98     13 |    0.70        0.00
+GET      /product/9SIQT8TOJO                                                               86     0(0.00%) |     16      10      79     13 |    1.20        0.00
+GET      /product/L9ECAV7KIM                                                               94     0(0.00%) |     14       9      56     13 |    1.10        0.00
+GET      /product/LS4PSXUNUM                                                               88     0(0.00%) |     18      10      88     13 |    1.30        0.00
+GET      /product/OLJCESPC7Z                                                               82     0(0.00%) |     18      10     103     13 |    1.30        0.00
+POST     /setCurrency                                                                     116     0(0.00%) |     29      15     173     19 |    1.90        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1528     0(0.00%) |     24       9     235     14 |   20.90        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                168     0(0.00%) |     23      12      85     18 |    1.40        0.00
+GET      /cart                                                                            189     0(0.00%) |     16       9      90     13 |    2.60        0.00
+POST     /cart                                                                            203     0(0.00%) |     34      15     117     21 |    3.00        0.00
+POST     /cart/checkout                                                                    77     0(0.00%) |     83      35     235     90 |    1.40        0.00
+GET      /product/0PUK6V6EV0                                                               92     0(0.00%) |     16      10      91     13 |    1.70        0.00
+GET      /product/1YMWWN1N4O                                                               94     0(0.00%) |     18      10     102     14 |    0.80        0.00
+GET      /product/2ZYFJ3GM2N                                                               74     0(0.00%) |     17      10     136     13 |    1.30        0.00
+GET      /product/66VCHSJNUP                                                               87     0(0.00%) |     19      10     102     13 |    1.70        0.00
+GET      /product/6E92ZMYYFZ                                                               95     0(0.00%) |     18       9      98     13 |    1.00        0.00
+GET      /product/9SIQT8TOJO                                                               88     0(0.00%) |     16      10      79     13 |    0.90        0.00
+GET      /product/L9ECAV7KIM                                                               94     0(0.00%) |     14       9      56     13 |    1.30        0.00
+GET      /product/LS4PSXUNUM                                                               89     0(0.00%) |     18      10      88     13 |    1.50        0.00
+GET      /product/OLJCESPC7Z                                                               87     0(0.00%) |     17      10     103     13 |    1.20        0.00
+POST     /setCurrency                                                                     122     0(0.00%) |     29      14     173     19 |    1.70        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1559     0(0.00%) |     24       9     235     14 |   21.50        0.00
+
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: null
+  Total Nodes: 3404
+
+Calico Configuration:
+  Dataplane Mode: BPF
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 10020
+  Total Services: 1033
+  Pods on target node: 17
+
+Performance:
+  Calico-node startup time: 35s
+========================================
+
+✅ SUCCESS: calico-node-bz4rw startup time is within the acceptable range (35 seconds < 60s)
+Stream closed EOF for default/calico-test-run-400-real-nodes-3000-fake-nodes-ebpf-hpckj (tester)
