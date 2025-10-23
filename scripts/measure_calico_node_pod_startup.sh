@@ -31,7 +31,7 @@ K8S_VERSION=$(kubectl version -o json 2>/dev/null | jq -r '.serverVersion.gitVer
 echo "Kubernetes Version: $K8S_VERSION"
 
 # Detect Provisioner
-PROVISIONER="Unknown"
+PROVISIONER="GCP-Kubeadm (default)"
 if kubectl get nodes -o json | jq -r '.items[0].spec.providerID' | grep -q "gce://"; then
   PROVISIONER="GKE (Google Kubernetes Engine)"
 elif kubectl get nodes -o json | jq -r '.items[0].spec.providerID' | grep -q "aws://"; then
@@ -76,7 +76,7 @@ echo "Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
 TOTAL_SERVICES=$(kubectl get services --all-namespaces -o json | jq '.items | length')
 echo "Total Services: $TOTAL_SERVICES"
 
-TOTAL_NODES=$(kubectl get nodes -o json | jq '.items | length')
+TOTAL_NODES=$(kubectl get nodes --no-headers | wc -l)
 echo "Total Nodes: $TOTAL_NODES"
 
 echo ""
