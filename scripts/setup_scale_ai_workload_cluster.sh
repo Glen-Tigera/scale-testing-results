@@ -5,13 +5,17 @@ bz provision
 
 bz install
 
-kubectl apply -f ../manifests
+cd 
+./apply-all.sh
 
 ## Apply cronjob
 kubectl apply -f ../jobs/calico-node-startup-measurement-job.yaml
 
-## Scale NGINX
+## Scale Fake Nodes
 kubectl scale deployment nginx --replicas=1000 -n default
+
+## Create job from cronjob
+kubectl create job calico-test-run-1400-nodes-ebpf --from=cronjob/calico-node-startup-test
 
 ## Create job from cronjob
 kubectl create job calico-test-run-1000-pods-per-node-nftables --from=cronjob/calico-node-startup-test
