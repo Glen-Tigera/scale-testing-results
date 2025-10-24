@@ -21,8 +21,8 @@ echo "Current revision: $CURRENT_REV"
 echo "3. Compacting etcd..."
 kubectl exec -n kube-system $ETCD_POD -- sh -c "$ETCD_CMD compact $CURRENT_REV"
 
-echo "4. Defragmenting etcd (this may take a minute)..."
-kubectl exec -n kube-system $ETCD_POD -- sh -c "$ETCD_CMD defrag"
+echo "4. Defragmenting etcd (this may take several minutes on large clusters)..."
+kubectl exec -n kube-system $ETCD_POD -- sh -c "$ETCD_CMD --command-timeout=5m defrag"
 
 echo "5. Disarming alarms..."
 kubectl exec -n kube-system $ETCD_POD -- sh -c "$ETCD_CMD alarm disarm"

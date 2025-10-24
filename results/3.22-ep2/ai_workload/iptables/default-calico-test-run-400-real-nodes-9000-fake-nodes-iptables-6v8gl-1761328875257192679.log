@@ -1,0 +1,87 @@
+Waiting for new load generator pod...
+pod/loadgenerator-59d7b7cc48-zvsmn condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-zvsmn
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-xggdt on node glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-xggdt...
+pod "calico-node-xggdt" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-j2b9q
+Pod created at: 2025-10-24T17:59:51Z (epoch: 1761328791)
+Waiting for pod calico-node-j2b9q to become Ready...
+pod/calico-node-j2b9q condition met
+
+========================================
+DaemonSet pod calico-node-j2b9q became Ready in 36 seconds.
+Calico-node startup time: 36s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                160     0(0.00%) |     22      14      98     19 |    1.10        0.00
+GET      /cart                                                                            201     0(0.00%) |     19      12      84     17 |    2.20        0.00
+POST     /cart                                                                            200     0(0.00%) |     36      20     148     25 |    2.90        0.00
+POST     /cart/checkout                                                                    69     0(0.00%) |     77      44     234     67 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                              108     0(0.00%) |     21      15      80     18 |    1.60        0.00
+GET      /product/1YMWWN1N4O                                                              106     0(0.00%) |     23      14      99     18 |    2.10        0.00
+GET      /product/2ZYFJ3GM2N                                                              102     0(0.00%) |     23      14      85     18 |    1.60        0.00
+GET      /product/66VCHSJNUP                                                               89     0(0.00%) |     20      14      79     18 |    1.60        0.00
+GET      /product/6E92ZMYYFZ                                                              108     0(0.00%) |     22      14      87     18 |    1.90        0.00
+GET      /product/9SIQT8TOJO                                                              105     0(0.00%) |     21      15      76     18 |    1.00        0.00
+GET      /product/L9ECAV7KIM                                                              105     0(0.00%) |     24      15      94     18 |    1.70        0.00
+GET      /product/LS4PSXUNUM                                                               97     0(0.00%) |     22      15      76     19 |    1.60        0.00
+GET      /product/OLJCESPC7Z                                                              102     0(0.00%) |     21      14      74     18 |    1.20        0.00
+POST     /setCurrency                                                                     117     0(0.00%) |     25      16      82     20 |    1.90        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1669     0(0.00%) |     26      12     234     19 |   23.30        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                164     0(0.00%) |     22      14      98     18 |    1.20        0.00
+GET      /cart                                                                            205     0(0.00%) |     19      12      84     17 |    2.30        0.00
+POST     /cart                                                                            201     0(0.00%) |     36      20     148     25 |    2.70        0.00
+POST     /cart/checkout                                                                    69     0(0.00%) |     77      44     234     67 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                              110     0(0.00%) |     21      15      80     18 |    1.40        0.00
+GET      /product/1YMWWN1N4O                                                              109     0(0.00%) |     23      14      99     18 |    1.70        0.00
+GET      /product/2ZYFJ3GM2N                                                              105     0(0.00%) |     22      14      85     18 |    1.50        0.00
+GET      /product/66VCHSJNUP                                                               92     0(0.00%) |     20      14      79     18 |    1.20        0.00
+GET      /product/6E92ZMYYFZ                                                              109     0(0.00%) |     22      14      87     18 |    1.60        0.00
+GET      /product/9SIQT8TOJO                                                              108     0(0.00%) |     21      15      76     18 |    1.30        0.00
+GET      /product/L9ECAV7KIM                                                              106     0(0.00%) |     24      15      94     18 |    1.80        0.00
+GET      /product/LS4PSXUNUM                                                               97     0(0.00%) |     22      15      76     19 |    1.40        0.00
+GET      /product/OLJCESPC7Z                                                              105     0(0.00%) |     21      14      74     18 |    1.20        0.00
+POST     /setCurrency                                                                     123     0(0.00%) |     25      16      89     20 |    2.10        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1703     0(0.00%) |     26      12     234     19 |   22.30        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: 
+  Total Nodes: 9401
+
+Calico Configuration:
+  Dataplane Mode: Iptables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 10020
+  Total Services: 1033
+
+Performance:
+  Calico-node startup time: 36s
+  Pod-to-Pod Median Latency: 19
+19ms
+========================================
+
+✅ SUCCESS: calico-node-j2b9q startup time is within the acceptable range (36 seconds < 60s)
+Stream closed EOF for default/calico-test-run-400-real-nodes-9000-fake-nodes-iptables-6v8gl (tester)
