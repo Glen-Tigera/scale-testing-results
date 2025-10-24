@@ -13,10 +13,13 @@ cd
 kubectl apply -f ../../jobs/calico-node-startup-measurement-job.yaml
 
 ## Scale Fake Nodes
-kubectl scale deployment nginx --replicas=1000 -n default
+kubectl scale statefulset addon-fake-nodes --replicas=1000 -n addon-fake-nodes
 
 ## Create job from cronjob
 kubectl create job calico-test-run-400-real-nodes-5000-fake-nodes-ebpf --from=cronjob/calico-node-startup-test
+
+## IPTables job
+kubectl create job calico-test-run-400-real-nodes-1000-fake-nodes-iptables --from=cronjob/calico-node-startup-test
 
 ## Create job from cronjob
 kubectl create job calico-test-run-1000-pods-per-node-nftables --from=cronjob/calico-node-startup-test

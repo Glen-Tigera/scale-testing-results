@@ -223,7 +223,6 @@ data:
     echo "Cluster Scale:"
     echo "  Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
     echo "  Total Services: $TOTAL_SERVICES"
-    echo "  Pods on target node: $PODS_ON_TARGET_NODE"
     echo ""
     echo "Performance:"
     echo "  Calico-node startup time: ${DURATION}s"
@@ -270,7 +269,7 @@ spec:
             env:
             # REQUIRED: Set the node name where you want to test calico-node startup
             - name: NODE_NAME
-              value: "glen-bz-ct3o-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+              value: "glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
             # OPTIONAL: Override these if needed
             - name: NAMESPACE
               value: "calico-system"
