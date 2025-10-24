@@ -76,8 +76,8 @@ echo "Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
 TOTAL_SERVICES=$(kubectl get services --all-namespaces -o json | jq '.items | length')
 echo "Total Services: $TOTAL_SERVICES"
 
-TOTAL_NODES=$(kubectl get nodes --no-headers | wc -l)
-echo "Total Nodes: $TOTAL_NODES"
+TOTAL_NODES=$(kubectl get nodes --no-headers | grep " Ready " | wc -l)
+echo "Total Ready Nodes: $TOTAL_NODES"
 
 echo ""
 echo "Pods per Node:"
@@ -186,7 +186,7 @@ echo "========================================"
 echo "Cluster Information:"
 echo "  Kubernetes Version: $K8S_VERSION"
 echo "  Provisioner: $PROVISIONER"
-echo "  Total Nodes: $TOTAL_NODES"
+echo "  Total Ready Nodes: $TOTAL_NODES"
 echo ""
 echo "Calico Configuration:"
 echo "  Dataplane Mode: $DATAPLANE_MODE"
