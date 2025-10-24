@@ -150,10 +150,25 @@ data:
       echo "Deleting load generator pod to clear stats..."
       kubectl delete pod $LOADGEN_POD -n $LOADGEN_NAMESPACE
       
-      echo "Waiting for new load generator pod..."
-      kubectl wait --for=condition=Ready pod -l app=loadgenerator -n $LOADGEN_NAMESPACE --timeout=120s
+      echo "Waiting for new load generator pod to be created..."
+      RETRIES=0
+      MAX_RETRIES=30
+      while [ $RETRIES -lt $MAX_RETRIES ]; do
+        NEW_LOADGEN_POD=$(kubectl get pods -n $LOADGEN_NAMESPACE -l app=loadgenerator -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+        if [ -n "$NEW_LOADGEN_POD" ] && [ "$NEW_LOADGEN_POD" != "$LOADGEN_POD" ]; then
+          echo "New load generator pod created: $NEW_LOADGEN_POD"
+          break
+        fi
+        sleep 2
+        RETRIES=$((RETRIES + 1))
+      done
       
-      NEW_LOADGEN_POD=$(kubectl get pods -n $LOADGEN_NAMESPACE -l app=loadgenerator -o jsonpath='{.items[0].metadata.name}')
+      if [ -z "$NEW_LOADGEN_POD" ] || [ "$NEW_LOADGEN_POD" = "$LOADGEN_POD" ]; then
+        echo "WARNING: New load generator pod not created within timeout"
+      else
+        echo "Waiting for new load generator pod to be ready..."
+        kubectl wait --for=condition=Ready pod/$NEW_LOADGEN_POD -n $LOADGEN_NAMESPACE --timeout=120s
+      fi
       echo "New load generator pod ready: $NEW_LOADGEN_POD"
     else
       echo "WARNING: No load generator pod found with label app=loadgenerator in namespace $LOADGEN_NAMESPACE"
@@ -265,7 +280,7 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: calico-node-startup-test
+  name: calico-node-startup-simulation-workload-test
   namespace: default
 spec:
   # Schedule: This is suspended by default, so it won't run automatically

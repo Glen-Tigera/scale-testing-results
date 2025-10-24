@@ -45,7 +45,7 @@ subjects:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: calico-startup-ai-workload-test-script
+  name: calico-startup-financial-services-test-script
   namespace: default
 data:
   measure_calico_node_pod_startup.sh: |
@@ -284,7 +284,7 @@ spec:
             env:
             # REQUIRED: Set the node name where you want to test calico-node startup
             - name: NODE_NAME
-              value: "glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+              value: "glen-bz-a5a0-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
             # OPTIONAL: Override these if needed
             - name: NAMESPACE
               value: "calico-system"
@@ -300,6 +300,6 @@ spec:
           volumes:
           - name: script
             configMap:
-              name: calico-startup-test-script
+              name: calico-startup-financial-services-test-script
               defaultMode: 0755
 
