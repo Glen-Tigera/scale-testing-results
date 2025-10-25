@@ -1,0 +1,113 @@
+=== Calico Node Startup Time Measurement ===
+Namespace: calico-system
+Label Selector: k8s-app=calico-node
+Target Node: glen-bz-a5a0-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Acceptable Startup Time: 60s
+
+=== Collecting Cluster Information ===
+Kubernetes Version: v1.33.5
+
+=== Calico Configuration ===
+Dataplane Mode: BPF
+Encapsulation Type: IPIP
+BGP Enabled: Enabled
+IP Pool CIDR: 192.168.0.0/16
+
+=== Cluster Scale Metrics ===
+Total NetworkPolicies: 100138
+Total Services: 1072
+Total Ready Nodes: 524
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-nf7l9
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-nf7l9" deleted from default namespace
+Waiting for new load generator pod to be created...
+New load generator pod created: loadgenerator-59d7b7cc48-w65z5
+Waiting for new load generator pod to be ready...
+pod/loadgenerator-59d7b7cc48-w65z5 condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-w65z5
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-qgqd5 on node glen-bz-a5a0-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-qgqd5...
+pod "calico-node-qgqd5" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-a5a0-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-2plgg
+Pod created at: 2025-10-24T22:25:56Z (epoch: 1761344756)
+Waiting for pod calico-node-2plgg to become Ready...
+pod/calico-node-2plgg condition met
+
+========================================
+DaemonSet pod calico-node-2plgg became Ready in 35 seconds.
+Calico-node startup time: 35s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 85     0(0.00%) |    201      18    5025     24 |    1.40        0.00
+GET      /cart                                                                             66     0(0.00%) |     12      10      19     13 |    2.00        0.00
+POST     /cart                                                                             63     0(0.00%) |     20      16      59     19 |    1.70        0.00
+POST     /cart/checkout                                                                    20     0(0.00%) |    285      29    5033     32 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                               32     0(0.00%) |     13      11      14     13 |    1.00        0.00
+GET      /product/1YMWWN1N4O                                                               35     0(0.00%) |     14      11      55     13 |    1.00        0.00
+GET      /product/2ZYFJ3GM2N                                                               36     0(0.00%) |     13      11      20     14 |    0.60        0.00
+GET      /product/66VCHSJNUP                                                               30     0(0.00%) |     15      11      66     13 |    0.60        0.00
+GET      /product/6E92ZMYYFZ                                                               33     0(0.00%) |     13      10      15     13 |    0.70        0.00
+GET      /product/9SIQT8TOJO                                                               35     0(0.00%) |     13      11      22     13 |    0.70        0.00
+GET      /product/L9ECAV7KIM                                                               32     0(0.00%) |     15      10      85     13 |    0.90        0.00
+GET      /product/LS4PSXUNUM                                                               36     0(0.00%) |     13      10      15     13 |    0.90        0.00
+GET      /product/OLJCESPC7Z                                                               24     0(0.00%) |     14      10      42     13 |    0.40        0.00
+POST     /setCurrency                                                                      45     0(0.00%) |     27      20      90     24 |    1.70        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       572     0(0.00%) |     52      10    5033     14 |   14.50        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 87     0(0.00%) |    197      18    5025     24 |    1.50        0.00
+GET      /cart                                                                             71     0(0.00%) |     12      10      19     13 |    2.00        0.00
+POST     /cart                                                                             65     0(0.00%) |     20      16      59     19 |    2.10        0.00
+POST     /cart/checkout                                                                    22     0(0.00%) |    265      29    5033     32 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                               32     0(0.00%) |     13      11      14     13 |    1.10        0.00
+GET      /product/1YMWWN1N4O                                                               36     0(0.00%) |     14      11      55     13 |    1.00        0.00
+GET      /product/2ZYFJ3GM2N                                                               37     0(0.00%) |     13      11      20     14 |    0.80        0.00
+GET      /product/66VCHSJNUP                                                               31     0(0.00%) |     14      11      66     13 |    0.70        0.00
+GET      /product/6E92ZMYYFZ                                                               35     0(0.00%) |     13      10      15     13 |    1.00        0.00
+GET      /product/9SIQT8TOJO                                                               39     0(0.00%) |     13      11      22     13 |    0.90        0.00
+GET      /product/L9ECAV7KIM                                                               33     0(0.00%) |     15      10      85     13 |    1.10        0.00
+GET      /product/LS4PSXUNUM                                                               36     0(0.00%) |     13      10      15     13 |    1.00        0.00
+GET      /product/OLJCESPC7Z                                                               25     0(0.00%) |     14      10      42     13 |    0.40        0.00
+POST     /setCurrency                                                                      49     0(0.00%) |     27      20      90     24 |    1.80        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       598     0(0.00%) |     51      10    5033     14 |   16.30        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: 
+  Total Ready Nodes: 524
+
+Calico Configuration:
+  Dataplane Mode: BPF
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 100138
+  Total Services: 1072
+
+Performance:
+  Calico-node startup time: 35s
+  Pod-to-Pod Median Latency (ms): 14
+14ms
+========================================
+
+✅ SUCCESS: calico-node-2plgg startup time is within the acceptable range (35 seconds < 60s)
+Stream closed EOF for default/calico-test-run-100k-policies-ebpf-95sdt (tester)
