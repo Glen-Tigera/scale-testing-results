@@ -293,7 +293,9 @@ spec:
             env:
             # REQUIRED: Set the node name where you want to test calico-node startup
             - name: NODE_NAME
-              value: "glen-bz-a5a0-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+              value: "glen-bz-tlk3-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name
+            - name: PROVISIONER
+              value: "gcp-kubeadm" # CHANGE THIS to your provisioner in Taskvars.yml
             # OPTIONAL: Override these if needed
             - name: NAMESPACE
               value: "calico-system"
