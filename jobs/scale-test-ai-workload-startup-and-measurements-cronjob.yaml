@@ -26,7 +26,7 @@ rules:
   resources: ["networkpolicies"]
   verbs: ["get", "list"]
 - apiGroups: ["operator.tigera.io"]
-  resources: ["installations"]
+  resources: ["installations", "tigerastatuses"]
   verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -114,6 +114,15 @@ data:
     TOTAL_NODES=$(kubectl get nodes --no-headers | grep " Ready " | wc -l)
     echo "Total Ready Nodes: $TOTAL_NODES"
 
+    echo ""
+    echo "=== Tigera Status ==="
+    echo ""
+    echo "Shortened Tigera Status:"
+    kubectl get tigerastatus 2>/dev/null || echo "Unable to retrieve tigerastatus (may not be installed)"
+    echo ""
+    echo "Full Tigera Status (YAML):"
+    kubectl get tigerastatus -o yaml 2>/dev/null || echo "Unable to retrieve tigerastatus (may not be installed)"
+    
     echo ""
     # ============================================
     # Restart Load Generator & Clear Stats
