@@ -1,0 +1,75 @@
+pod/calico-node-d5wps condition met
+
+========================================
+DaemonSet pod calico-node-d5wps became Ready in 35 seconds.
+Calico-node startup time: 35s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 90     0(0.00%) |    177       8    5012     11 |    1.70        0.00
+GET      /cart                                                                             52     0(0.00%) |      8       6      11      8 |    1.00        0.00
+POST     /cart                                                                             52     0(0.00%) |     15       9      72     11 |    1.80        0.00
+POST     /cart/checkout                                                                    17     0(0.00%) |     63      24     155     47 |    0.30        0.00
+GET      /product/0PUK6V6EV0                                                               31     0(0.00%) |      8       6      10      9 |    0.70        0.00
+GET      /product/1YMWWN1N4O                                                               21     0(0.00%) |      8       7      11      8 |    0.30        0.00
+GET      /product/2ZYFJ3GM2N                                                               29     0(0.00%) |      8       5      11      9 |    0.60        0.00
+GET      /product/66VCHSJNUP                                                               27     0(0.00%) |     10       6      49      9 |    1.10        0.00
+GET      /product/6E92ZMYYFZ                                                               48     0(0.00%) |      9       6      26      9 |    1.00        0.00
+GET      /product/9SIQT8TOJO                                                               33     0(0.00%) |     10       7      54      9 |    0.70        0.00
+GET      /product/L9ECAV7KIM                                                               24     0(0.00%) |      8       6      10      9 |    0.80        0.00
+GET      /product/LS4PSXUNUM                                                               28     0(0.00%) |      8       6      10      9 |    0.60        0.00
+GET      /product/OLJCESPC7Z                                                               39     0(0.00%) |      8       6      11      9 |    0.90        0.00
+POST     /setCurrency                                                                      43     0(0.00%) |    128       9    5013     12 |    1.50        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       534     0(0.00%) |     49       5    5013      9 |   13.00        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 93     0(0.00%) |    172       8    5012     11 |    1.60        0.00
+GET      /cart                                                                             57     0(0.00%) |      8       6      11      8 |    1.30        0.00
+POST     /cart                                                                             55     0(0.00%) |     15       9      72     11 |    2.00        0.00
+POST     /cart/checkout                                                                    18     0(0.00%) |     61      24     155     46 |    0.50        0.00
+GET      /product/0PUK6V6EV0                                                               34     0(0.00%) |      8       6      10      9 |    0.80        0.00
+GET      /product/1YMWWN1N4O                                                               21     0(0.00%) |      8       7      11      8 |    0.30        0.00
+GET      /product/2ZYFJ3GM2N                                                               30     0(0.00%) |      9       5      14      9 |    0.60        0.00
+GET      /product/66VCHSJNUP                                                               28     0(0.00%) |     10       6      49      9 |    1.00        0.00
+GET      /product/6E92ZMYYFZ                                                               48     0(0.00%) |      9       6      26      9 |    1.00        0.00
+GET      /product/9SIQT8TOJO                                                               33     0(0.00%) |     10       7      54      9 |    0.90        0.00
+GET      /product/L9ECAV7KIM                                                               26     0(0.00%) |      8       6      10      9 |    0.90        0.00
+GET      /product/LS4PSXUNUM                                                               29     0(0.00%) |      8       6      10      9 |    0.60        0.00
+GET      /product/OLJCESPC7Z                                                               42     0(0.00%) |      8       6      11      9 |    1.00        0.00
+POST     /setCurrency                                                                      48     0(0.00%) |    220       9    5013     12 |    1.40        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       562     0(0.00%) |     56       5    5013      9 |   13.90        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: gcp-kubeadm
+  Total Ready Nodes: 524
+
+Calico Configuration:
+  Dataplane Mode: Nftables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 130151
+  Total Services: 1073
+
+Performance:
+  Calico-node startup time: 35s
+  Pod-to-Pod Median Latency (ms): 9
+9ms
+========================================
+
+✅ SUCCESS: calico-node-d5wps startup time is within the acceptable range (35 seconds < 60s)
+Stream closed EOF for default/calico-test-run-10k-standing-120k-live-policies-nftables-df5zr (tester)
