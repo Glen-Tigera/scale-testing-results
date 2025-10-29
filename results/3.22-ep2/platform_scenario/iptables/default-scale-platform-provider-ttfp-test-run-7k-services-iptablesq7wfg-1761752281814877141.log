@@ -1,5 +1,35 @@
-+ echo 'Calling start endpoint...'
-+ curl -f http://test-operator.sto-system.svc.cluster.local:80/start
+service/test-svc-6976 created
+service/test-svc-6975 created
+service/test-svc-6977 created
+service/test-svc-6978 created
+service/test-svc-6979 created
+service/test-svc-6980 created
+service/test-svc-6981 created
+service/test-svc-6982 created
+service/test-svc-6983 created
+service/test-svc-6985 created
+service/test-svc-6984 created
+service/test-svc-6988 created
+service/test-svc-6987 created
+service/test-svc-6986 created
+service/test-svc-6989 created
+service/test-svc-6992 created
+service/test-svc-6990 created
+service/test-svc-6991 created
+service/test-svc-6993 created
+service/test-svc-6994 created
+service/test-svc-6995 created
+service/test-svc-6996 created
+service/test-svc-6998 created
+service/test-svc-6997 created
+service/test-svc-6999 created
+/apps
+Final service count: 7000
+pod "loadgenerator-59d7b7cc48-9xqrb" deleted
+pod "prometheus-push-gateway-dh6h4" deleted
+pod "prometheus-push-gateway-pbsl5" deleted
+pod "prometheus-push-gateway-xbn94" deleted
+pod "prometheus-client-0" deleted
 Calling start endpoint...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -14,6 +44,7 @@ Started test.
     "tearDown": false,
     "disableCrossNamespace": false,
     "crossNamespaceOnly": false,
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  1679  100  1679    0     0  52513      0 --:--:-- --:--:-- --:--:-- 54161
     "clients": {
         "nodeSelector": {
             "cloud.google.com/gke-nodepool": "default-pool"
@@ -28,7 +59,6 @@ Started test.
         "timeout": "",
         "url_length_factor": "",
         "connectionsPerSecond": 10,
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  1679  100  1679    0     0  63370      0 --:--:-- --:--:-- --:--:-- 64576
         "expectFailConnectionsPerSecond": 10,
         "resources": {
             "requests": {
@@ -68,33 +98,10 @@ Started test.
         "enableAppLayerPolicy": false
     }
 }
-+ sleep 240
-+ kubectl logs -l app=loadgenerator --tail 1000
-+ for attempt in {1..5}
-+ echo 'Attempt 1 of 5 to get TTFP 99th percentile TTFP_VALUE...'
 Attempt 1 of 5 to get TTFP 99th percentile TTFP_VALUE...
-++ curl -s 'http://prometheus-client.sto-system.svc.cluster.local:9090/api/v1/query?query=ttfp_quantile%7Bquantile%3D%220.99%22%7D'
-++ jq -r '.data.result[0].value[1] // "null"'
-+ TTFP_VALUE=2.6569181168
-+ '[' 2.6569181168 '!=' null ']'
-+ echo 'TTFP 99th percentile: 2.6569181168'
-+ tee -a /results/3000-svc.log
-TTFP 99th percentile: 2.6569181168
-++ echo '2.6569181168 >= 4'
-++ bc
-+ fail=0
-+ '[' 0 -eq 1 ']'
-+ echo 'SUCCESS: TTFP startup time is within the acceptable range (2.6569181168 seconds)'
-+ tee -a /results/3000-svc.log
-SUCCESS: TTFP startup time is within the acceptable range (2.6569181168 seconds)
-+ break
-+ '[' -n glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal ']'
-+ echo '=== Recording calico-node startup time ==='
-+ tee -a /results/3000-svc.log
+TTFP 99th percentile: 3.4436477379s
+SUCCESS: TTFP startup time is within the acceptable range (3.4436477379 seconds)
 === Recording calico-node startup time ===
-+ set +e
-+ /scripts/measure_calico_node_pod_startup.sh
-+ tee -a /results/3000-svc.log
 === Calico Node Startup Time Measurement ===
 Namespace: calico-system
 Label Selector: k8s-app=calico-node
@@ -105,36 +112,36 @@ Acceptable Startup Time: 60s
 Kubernetes Version: v1.33.5
 
 === Calico Configuration ===
-Dataplane Mode: Nftables
+Dataplane Mode: Iptables
 Encapsulation Type: IPIP
 BGP Enabled: Enabled
 IP Pool CIDR: 192.168.0.0/16
 
 === Cluster Scale Metrics ===
 Total NetworkPolicies: 2017
-Total Services: 3048
+Total Services: 7049
 Total Ready Nodes: 504
 
 === Tigera Status ===
 
 Shortened Tigera Status:
 NAME                          AVAILABLE   PROGRESSING   DEGRADED   SINCE
-apiserver                     True        False         False      3h3m
-calico                        True        False         False      6m36s
-intrusion-detection           True        False         False      3h1m
-ippools                       True        False         False      3h4m
-log-collector                 True        False         False      3h2m
-log-storage                   True        False         False      3h4m
-log-storage-access            True        False         False      3h
-log-storage-dashboards        True        False         False      3h
-log-storage-elastic           True        False         False      3h
-log-storage-esmetrics         True        False         False      3h
-log-storage-kubecontrollers   True        False         False      3h
-log-storage-secrets           True        False         False      3h4m
-manager                       True        False         False      3h2m
-monitor                       True        False         False      3h3m
-policy-recommendation         True        False         False      3h3m
-tiers                         True        False         False      3h3m
+apiserver                     True        False         False      21h
+calico                        True        False         False      8m14s
+intrusion-detection           True        False         False      21h
+ippools                       True        False         False      21h
+log-collector                 True        False         False      21h
+log-storage                   True        False         False      21h
+log-storage-access            True        False         False      21h
+log-storage-dashboards        True        False         False      21h
+log-storage-elastic           True        False         False      21h
+log-storage-esmetrics         True        False         False      21h
+log-storage-kubecontrollers   True        False         False      21h
+log-storage-secrets           True        False         False      21h
+manager                       True        False         False      21h
+monitor                       True        False         False      21h
+policy-recommendation         True        False         False      21h
+tiers                         True        False         False      21h
 
 Full Tigera Status (YAML):
       message: All objects available
@@ -154,12 +161,12 @@ Full Tigera Status (YAML):
     creationTimestamp: "2025-10-28T17:52:55Z"
     generation: 1
     name: monitor
-    resourceVersion: "5065"
+    resourceVersion: "2722882"
     uid: aeb0d306-9a5f-402b-80a1-a0851025ae7c
   spec: {}
   status:
     conditions:
-    - lastTransitionTime: "2025-10-28T17:53:40Z"
+    - lastTransitionTime: "2025-10-29T14:53:00Z"
       message: All Objects Available
       observedGeneration: 1
       reason: AllObjectsAvailable
@@ -237,22 +244,13 @@ metadata:
   resourceVersion: ""
 
 === Starting Calico Node Restart Test ===
-Found pod: calico-node-67xjt on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal
-Deleting pod calico-node-67xjt...
-pod "calico-node-67xjt" deleted
+Found pod: calico-node-xsb49 on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-xsb49...
+pod "calico-node-xsb49" deleted
 Waiting for new pod on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal...
-New pod detected: calico-node-d48nf
-Pod created at: 2025-10-28T20:57:28Z (epoch: 1761685048)
-Waiting for pod calico-node-d48nf to become Ready...
-      status: "False"
-      type: Progressing
-- apiVersion: operator.tigera.io/v1
-  kind: TigeraStatus
-  metadata:
-    creationTimestamp: "2025-10-28T17:52:55Z"
-    generation: 1
-    name: policy-recommendation
-    resourceVersion: "5636"
+New pod detected: calico-node-rk8ch
+Pod created at: 2025-10-29T15:35:43Z (epoch: 1761752143)
+Waiting for pod calico-node-rk8ch to become Ready...
     uid: b06e0bd2-24eb-4abe-ad4f-4aa19f11916f
   spec: {}
   status:
@@ -306,18 +304,18 @@ metadata:
   resourceVersion: ""
 
 === Starting Calico Node Restart Test ===
-Found pod: calico-node-67xjt on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal
-Deleting pod calico-node-67xjt...
-pod "calico-node-67xjt" deleted
+Found pod: calico-node-xsb49 on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-xsb49...
+pod "calico-node-xsb49" deleted
 Waiting for new pod on node glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal...
-New pod detected: calico-node-d48nf
-Pod created at: 2025-10-28T20:57:28Z (epoch: 1761685048)
-Waiting for pod calico-node-d48nf to become Ready...
-pod/calico-node-d48nf condition met
+New pod detected: calico-node-rk8ch
+Pod created at: 2025-10-29T15:35:43Z (epoch: 1761752143)
+Waiting for pod calico-node-rk8ch to become Ready...
+pod/calico-node-rk8ch condition met
 
 ========================================
-DaemonSet pod calico-node-d48nf became Ready in 36 seconds.
-Calico-node startup time: 36s
+DaemonSet pod calico-node-rk8ch became Ready in 34 seconds.
+Calico-node startup time: 34s
 ========================================
 
 ========================================
@@ -328,22 +326,30 @@ Cluster Information:
   Total Ready Nodes: 504
 
 Calico Configuration:
-  Dataplane Mode: Nftables
+  Dataplane Mode: Iptables
   Encapsulation: IPIP
   BGP Enabled: Enabled
 
 Cluster Scale:
   Total NetworkPolicies: 2017
-  Total Services: 3048
+  Total Services: 7049
 
 Performance:
-  Calico-node startup time: 36s
+  Calico-node startup time: 34s
 ========================================
 
-✅ SUCCESS: calico-node-d48nf startup time is within the acceptable range (36 seconds < 60s)
+✅ SUCCESS: calico-node-rk8ch startup time is within the acceptable range (34 seconds < 60s)
 === Calico-node startup time recorded successfully ===
+
+========================================
+TEST SUMMARY
+========================================
+Service Count: 7000
+TTFP 99th Percentile: 3.4436477379s
+Acceptable TTFP Time: 4s
+========================================
+
 === End Results ===
 
 All TTFP tests completed successfully!
-+ echo 'All TTFP tests completed successfully!'
-Stream closed EOF for default/scale-platform-provider-ttfp-test-run-3k-services-sj77n (tester)
+Stream closed EOF for default/scale-platform-provider-ttfp-test-run-7k-services-iptablesq7wfg (tester)

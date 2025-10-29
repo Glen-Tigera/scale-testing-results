@@ -317,13 +317,13 @@ data:
         kubectl delete pod -n sto-system -l prometheus=push-gateway --ignore-not-found=true
         kubectl delete pod -n sto-system prometheus-client-0 --ignore-not-found=true
         
-        sleep 30
+        sleep 120
         
         # Start test
         echo "Calling start endpoint..."
         curl -f "${STO_ENDPOINT}/start" || echo "Start endpoint not available"
         
-        sleep 240
+        sleep 180
         
         # Collect load generator logs
         kubectl logs -l app=loadgenerator --tail 1000 > /results/${TEST_LABEL}.log 2>&1 || echo "No loadgenerator logs available"
@@ -439,7 +439,7 @@ spec:
             # Test configuration - Choose ONE mode:
             # MODE 1: Set NUM_SERVICES for single test with specific count
             - name: NUM_SERVICES
-              value: "4000"  # e.g., "5000" for 5k services. Leave empty for iteration mode.
+              value: "8000"  # e.g., "5000" for 5k services. Leave empty for iteration mode.
             # MODE 2: Iteration mode (used when NUM_SERVICES is empty)
             - name: INTERVAL
               value: "1000"  # Number of services to add per iteration
