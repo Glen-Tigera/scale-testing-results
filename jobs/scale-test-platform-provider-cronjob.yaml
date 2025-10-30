@@ -419,7 +419,7 @@ spec:
   jobTemplate:
     spec:
       backoffLimit: 0
-      ttlSecondsAfterFinished: 3600  # Job and pods will be automatically deleted 1 hour after completion
+      ttlSecondsAfterFinished: 86400  # Job and pods will be automatically deleted 1 day after completion
       template:
         metadata:
           labels:
@@ -431,22 +431,41 @@ spec:
           - name: tester
             image: alpine/k8s:1.28.3
             command: ["/bin/bash"]
-            args: ["-c", "apk add --no-cache curl jq bc bash coreutils && /scripts/test.sh"]
+            args: 
+            - "-c"
+            - |
+              set -e
+              echo "Installing required packages..."
+              # Try multiple mirrors with retries
+              for i in {1..3}; do
+                echo "Attempt $i: Installing packages..."
+                if apk add --no-cache curl jq bc bash coreutils; then
+                  echo "Packages installed successfully"
+                  break
+                elif [ $i -eq 3 ]; then
+                  echo "ERROR: Failed to install packages after 3 attempts"
+                  exit 1
+                else
+                  echo "Installation failed, retrying in 5 seconds..."
+                  sleep 5
+                fi
+              done
+              /scripts/test.sh
             env:
             # OPTIONAL: Set NODE_NAME for calico-node startup testing
             - name: NODE_NAME
               value: "glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name for calico-node testing
             # Test configuration - Choose ONE mode:
             # MODE 1: Set NUM_SERVICES for single test with specific count
-            - name: NUM_SERVICES
-              value: "8000"  # e.g., "5000" for 5k services. Leave empty for iteration mode.
+            # - name: NUM_SERVICES
+            #   value: ""  # e.g., "5000" for 5k services. Leave empty for iteration mode.
             # MODE 2: Iteration mode (used when NUM_SERVICES is empty)
             - name: INTERVAL
-              value: "1000"  # Number of services to add per iteration
+              value: "2000"  # Number of services to add per iteration
             - name: START_ITER
-              value: "1"  # Start at 1k services
+              value: "26"  # Start at 1k services
             - name: END_ITER
-              value: "5"  # End at 5k services
+              value: "60"  # End at 5k services
             - name: ACCEPTABLE_TTFP_TIME
               value: "4"  # 4 seconds
             # Calico node test configuration
