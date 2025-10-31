@@ -5,7 +5,7 @@ This directory contains scale testing results organized by scenario, release ver
 ## Directory Structure
 
 ```
-results/
+scale-results/
 ├── simulation/
 ├── ai-workloads/
 ├── financial-services/
@@ -63,4 +63,14 @@ Log files are typically named with:
 - Timestamp
 
 Example: `default-calico-test-run-100k-policies-ebpf-95sdt-1761344864432943046.log`
+
+## Relationship to Profiles and Scripts
+
+Results in this directory are generated using:
+
+- **Profiles:** `profiles/{scenario}/{release}/{dataplane}/` - Cluster configuration
+- **Scripts:** `scripts/{scenario}/` - Test execution scripts and cronjobs
+
+All three directories share the same organizational structure for easy navigation:
+- `profiles/platform-provider/v3.22-ep2/ebpf/` → `scripts/platform-provider/` → `scale-results/platform-provider/v3.22-ep2/ebpf/`
 

@@ -1,6 +1,6 @@
 # Scale Test Profiles
 
-This directory contains the test profiles and configurations used to run scale tests for each scenario, organized by scenario, release version, and dataplane.
+This directory contains the banzai test profiles and configurations used to run scale tests for each scenario, organized by scenario, release version, and dataplane.
 
 ## Directory Structure
 
@@ -42,12 +42,16 @@ Each profile directory typically contains:
 1. Navigate to the scenario and release you want to test (e.g., `platform-provider/v3.22-ep2/`)
 2. Review the `README.md` for profile-specific instructions
 3. Use the `Taskfile.yml` and `Taskvars.yml` to configure and run tests
-4. Results will be generated in the corresponding `results/` directory
+4. Results will be generated in the corresponding `scale-results/` directory
 
-## Relationship to Results
+## Relationship to Results and Scripts
 
-Profiles in this directory are used to generate the test results stored in the `results/` directory. The structure mirrors the results organization to make it easy to find the configuration used for any given test result.
+Profiles in this directory work together with scripts and results:
 
-- Profile: `profiles/platform-provider/v3.22-ep2/ebpf/`
-- Results: `results/platform-provider/v3.22-ep2/ebpf/`
+- **Profile:** `profiles/platform-provider/v3.22-ep2/ebpf/` - Configuration for provisioning
+- **Scripts:** `scripts/platform-provider/` - Setup scripts and cronjobs to run tests
+- **Results:** `scale-results/platform-provider/v3.22-ep2/ebpf/` - Test results and logs
+
+The structure mirrors across all three directories to make it easy to find related files:
+- Profile configuration → Setup scripts → Test results
 

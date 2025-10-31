@@ -80,7 +80,17 @@ CronJobs are typically configured with:
 - Schedule (usually suspended by default for manual execution)
 - Resource limits
 - Test parameters via environment variables
-- Result storage locations matching the `results/` directory structure
+- Result storage locations matching the `scale-results/` directory structure
+
+## Relationship to Profiles and Results
+
+Scripts in this directory work together with profiles and results:
+
+- **Profiles:** `profiles/{scenario}/{release}/{dataplane}/` - Use profiles to provision clusters
+- **Scripts:** `scripts/{scenario}/` - Use scripts and cronjobs to run tests
+- **Results:** `scale-results/{scenario}/{release}/{dataplane}/` - Find test results organized the same way
+
+All three directories share the same organizational structure for consistency.
 
 ## Future Organization
 
