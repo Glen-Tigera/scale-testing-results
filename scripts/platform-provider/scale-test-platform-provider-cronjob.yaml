@@ -317,13 +317,14 @@ data:
         kubectl delete pod -n sto-system -l prometheus=push-gateway --ignore-not-found=true
         kubectl delete pod -n sto-system prometheus-client-0 --ignore-not-found=true
         
-        sleep 120
+        sleep 60
         
         # Start test
         echo "Calling start endpoint..."
         curl -f "${STO_ENDPOINT}/start" || echo "Start endpoint not available"
         
-        sleep 180
+        echo "Waiting for 4 minutes for test to finish..."
+        sleep 240
         
         # Collect load generator logs
         kubectl logs -l app=loadgenerator --tail 1000 > /results/${TEST_LABEL}.log 2>&1 || echo "No loadgenerator logs available"
