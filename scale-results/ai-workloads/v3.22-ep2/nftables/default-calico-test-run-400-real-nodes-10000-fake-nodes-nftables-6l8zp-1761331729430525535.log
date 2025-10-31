@@ -1,0 +1,66 @@
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 93     0(0.00%) |     20      14      79     19 |    1.70        0.00
+GET      /cart                                                                             69     0(0.00%) |     20      14      76     17 |    1.90        0.00
+POST     /cart                                                                             84     0(0.00%) |     38      22     107     27 |    2.40        0.00
+POST     /cart/checkout                                                                    25     0(0.00%) |     73      48     167     53 |    0.80        0.00
+GET      /product/0PUK6V6EV0                                                               47     0(0.00%) |     19      15      76     18 |    1.70        0.00
+GET      /product/1YMWWN1N4O                                                               30     0(0.00%) |     20      15      56     19 |    0.70        0.00
+GET      /product/2ZYFJ3GM2N                                                               41     0(0.00%) |     20      16      62     18 |    1.60        0.00
+GET      /product/66VCHSJNUP                                                               48     0(0.00%) |     20      16      61     19 |    1.40        0.00
+GET      /product/6E92ZMYYFZ                                                               36     0(0.00%) |     20      16      61     19 |    0.60        0.00
+GET      /product/9SIQT8TOJO                                                               35     0(0.00%) |     22      16     119     19 |    1.10        0.00
+GET      /product/L9ECAV7KIM                                                               37     0(0.00%) |     21      15      70     18 |    0.90        0.00
+GET      /product/LS4PSXUNUM                                                               40     0(0.00%) |     21      15      89     19 |    0.60        0.00
+GET      /product/OLJCESPC7Z                                                               38     0(0.00%) |     20      16      65     19 |    1.00        0.00
+POST     /setCurrency                                                                      46     0(0.00%) |     22      16     133     19 |    1.10        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       669     0(0.00%) |     24      14     167     19 |   17.50        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                 95     0(0.00%) |     20      14      79     19 |    1.60        0.00
+GET      /cart                                                                             72     0(0.00%) |     20      14      76     17 |    1.80        0.00
+POST     /cart                                                                             90     0(0.00%) |     37      22     107     27 |    2.80        0.00
+POST     /cart/checkout                                                                    26     0(0.00%) |     72      48     167     53 |    0.90        0.00
+GET      /product/0PUK6V6EV0                                                               51     0(0.00%) |     20      15      76     18 |    1.90        0.00
+GET      /product/1YMWWN1N4O                                                               34     0(0.00%) |     19      15      56     19 |    0.90        0.00
+GET      /product/2ZYFJ3GM2N                                                               42     0(0.00%) |     20      16      62     18 |    1.40        0.00
+GET      /product/66VCHSJNUP                                                               50     0(0.00%) |     20      16      61     19 |    1.40        0.00
+GET      /product/6E92ZMYYFZ                                                               41     0(0.00%) |     20      16      61     19 |    0.80        0.00
+GET      /product/9SIQT8TOJO                                                               39     0(0.00%) |     21      16     119     19 |    1.10        0.00
+GET      /product/L9ECAV7KIM                                                               37     0(0.00%) |     21      15      70     18 |    1.20        0.00
+GET      /product/LS4PSXUNUM                                                               43     0(0.00%) |     21      15      89     19 |    0.70        0.00
+GET      /product/OLJCESPC7Z                                                               41     0(0.00%) |     19      16      65     19 |    0.80        0.00
+POST     /setCurrency                                                                      49     0(0.00%) |     22      16     133     19 |    1.20        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                       710     0(0.00%) |     24      14     167     19 |   18.50        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: 
+  Total Ready Nodes: 11269
+
+Calico Configuration:
+  Dataplane Mode: Nftables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 10020
+  Total Services: 1033
+
+Performance:
+  Calico-node startup time: 35s
+  Pod-to-Pod Median Latency (ms): 19
+19ms
+========================================
+
+✅ SUCCESS: calico-node-sdfn4 startup time is within the acceptable range (35 seconds < 60s)
+Stream closed EOF for default/calico-test-run-400-real-nodes-10000-fake-nodes-nftables-6l8zp (tester)

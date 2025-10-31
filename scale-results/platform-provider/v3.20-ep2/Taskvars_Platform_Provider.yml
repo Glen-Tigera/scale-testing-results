@@ -1,0 +1,244 @@
+# Source: gcp-kubeadm:render-gcp-kubeadm-taskvars
+# This section contains configuration for gcp-kubeadm provisioner
+PROVISIONER: gcp-kubeadm # DO NOT CHANGE
+CRC_PATH: kubeadm/1.6 # windows dir is required when CREATE_WINDOWS_NODES=true
+CRC_PODS_PER_NODE: 300
+PLATFORM_DIR: /home/lance/scratch/scale-services-per-cluster/.local/crc/kubeadm/1.6
+# Source: provisioner:render-cluster-taskvars
+# This section contains configuration for clusters
+CLUSTER_NAME: lance-bz-z1fo
+CLUSTER_MODE:  # currently only in use by AKS to create private cluster by setting to "private"
+CLUSTER_MASTER_NODES: 1
+CLUSTER_NODES: 20
+CLUSTER_IMAGE: ubuntu-2404-lts-amd64 # used by specific provisioners i.e. CRC provisioners, kops, openshift, eks, aks & gke
+USE_VENDORED_CNI: false # determines if to use the CNI vendored by provider. If true, update CNI_PLUGIN based on provider
+CNI_PLUGIN:  # can be blank or select options depending on the provider and USE_VENDORED_CNI. See Calico Enterprise installation specs when USE_VENDORED_CNI=false
+CNI_PLUGIN_VERSION:  # only if the CNI_PLUGIN supports setting a version
+
+KUBE_PROXY_MODE:  # Valid values: iptables, ipvs, nftables (or blank to use provisioner default).  Only used by *-kubeadm
+ENABLE_EXTERNAL_NODE: false  # used by all aws and gcp provisioner types
+ENABLE_PSP: false # used to enable using pod security policies ONLY for azr-aks, aws-kubeadm, gcp-kubeadm
+INSTALL_ETCD_POD: false # Note: ONLY for calico manual installs, set to true if planning to use etcd datastore
+IP_FAMILY: ipv4 # Valid options: ipv4 (default), ipv6, dual (dual stack (only with local-kind and aws-kubeadm))
+IPV4_POD_CIDR:  # if blank, leave to not change default. If prefilled, be wary of changing
+IPV6_POD_CIDR:
+ENABLE_FIPS: false
+USE_WINDOWS_HPC_INSTALL: false
+CREATE_WINDOWS_NODES: false
+NUM_NON_CLUSTER_HOSTS: 0
+NON_CLUSTER_HOST_IMAGE: rhel-8
+# Source: provisioner:render-k8s-taskvars
+# This section contains configuration for k8s
+K8S_VERSION: stable-1 # not used by OpenShift (value updated to match version albeit), MKE, ICP provisioners
+KUBECONFIG: /home/lance/scratch/scale-services-per-cluster/.local/kubeconfig # DO NOT CHANGE from /home/lance/scratch/scale-services-per-cluster/.local/kubeconfig
+KUBECONFIG_PROXY:
+KUBE_SOCKS5_PORT: 1080 # port to use for SOCKS5 proxy to access API for remote Kubernetes cluster. Currently only in use by AKS private cluster
+# Source: provisioner:render-gcp-taskvars
+# This section contains configuration for gcp provisioners
+GOOGLE_PROJECT: tigera-dev
+GOOGLE_REGION: us-central1
+GOOGLE_ZONE: us-central1-a
+GOOGLE_NETWORK: default
+GOOGLE_DISK_TYPE: pd-standard # currently ONLY used by GKE and gcp-kubeadm (in gcp-kubeadm, refers to node and infra nodes only - others get ssd by default)
+GOOGLE_DISK_SIZE: 50 # Google cripples IOPS on disks smaller than 200GB.
+GOOGLE_MASTER_MACHINE_TYPE: n2-standard-32
+GOOGLE_NODE_MACHINE_TYPE: n2-standard-32
+GOOGLE_INFRA_MACHINE_TYPE: n2-standard-8
+GOOGLE_RR_MACHINE_TYPE: n2-standard-2
+GOOGLE_ETCD_MACHINE_TYPE: n2-standard-2
+
+GOOGLE_SUBNETWORK:  # used only by gcp-gke, will create a subnet if left empty
+# Source: crc:render-taskvars
+# This section contains provisioner configuration for crc
+CRC_BRANCH: master
+TERRAFORM_VERSION: 1.3.3
+TERRAFORM_CMD_ATTEMPTS: 3 # number of times to attempt running "terraform apply"
+
+ENABLE_HUGEPAGES: false
+DOCKER_AUTH_FILE: /home/lance/scratch/scale-services-per-cluster/.local/config/docker_auth.json
+NUM_INFRA_NODES: 3
+ENABLE_CLOUD_PROVIDER: false # Set cloud provider to true to create cloud provider resources. Used by *-kubeadm and gcp-rancher
+ENABLE_IP_FORWARDING: false # set IP forwarding to true to disable src-dst check on gcp VMs
+
+# Source: operator:render-operator-taskvars
+# This section contains configuration for operator install
+INSTALLER: operator # DO NOT CHANGE
+OPERATOR_IMAGE_VERSION:
+OPERATOR_IMAGE_ARGS:  # comma separated string of args to pass to operator image
+CALICO_CONFIG_DIR:  # additional Calico Enterprise resources to configure as part of the installation.
+# Source: installer:render-release-taskvars
+# This section contains configuration for all installers
+PRODUCT: calient
+USE_HASH_RELEASE: false # DO NOT CHANGE.
+RELEASE_STREAM: v3.20
+RELEASE_PATCH: 0-2.2
+RELEASE_ARTIFACTS_URL: https://downloads.tigera.io/ee/v3.20.0-2.2
+DOCS_MANIFEST_URL: https://downloads.tigera.io/ee/v3.20.0-2.2/manifests
+DOCS_URL: https://docs.tigera.io/calico-enterprise/3.20
+DOCKER_AUTH_CONFIG: /home/lance/scratch/scale-services-per-cluster/.local/config/docker_cfg.json
+CALICOCTL_INSTALL_TYPE: binary # Valid options: binary, container
+CALICOQ_INSTALL_TYPE: binary # Valid options: binary, container
+# Source: installer:render-windows-taskvars
+# This section contains configuration for windows
+CREATE_WINDOWS_NODES: false # use ONLY when PROVISIONER=aws-kubeadm
+WINDOWS_RELEASE_VERSION: v3.20.0-2.2 # used when CREATE_WINDOWS_NODES="true"
+WINDOWS_OS_VERSION: 1809 # used when CREATE_WINDOWS_NODES="true"
+WINDOWS_CONTAINER_RUNTIME: containerd:1.6.8 # used when CREATE_WINDOWS_NODES="true". set to "docker" or "containerd:<version>" - e.g., "containerd:1.4.4"
+WINDOWS_GCS_BUCKET: gs://tigera-windows # used when CREATE_WINDOWS_NODES="true"
+# Source: installer:render-customization-taskvars
+# This section contains configuration for customizing installation for all installers
+ENCAPSULATION_TYPE:  # Valid options are "IPIP", "VXLAN", "IPIPCrossSubnet", "VXLANCrossSubnet", "None" or leave blank to keep default
+ENCAPSULATION_TYPE_V6:  # Valid options are "VXLAN", "VXLANCrossSubnet", "None" or leave blank to keep default
+BGP_STATUS:  # Valid options are "Enabled", "Disabled" or leave blank to keep default
+NAT_OUTGOING:  # Valid options are "Enabled", "Disabled" or leave blank to keep default
+NAT_OUTGOING_V6:  # Valid options are "Enabled", "Disabled" or leave blank to keep default
+CONTAINER_IP_FORWARDING:  # Valid options are "Enabled", "Disabled" or leave blank to keep default
+ENABLE_ALP: false
+ENABLE_IDP: false
+IDP:
+ISTIO_VERSION: 1.15.2
+ALP_PERMISSIVE_MODE: false
+TPROXY_MODE: Disabled # valid options Enabled, EnabledAllServices (for testing purpose only)
+ENABLE_TPROXY: "false"
+ENABLE_WIREGUARD: false
+ENABLE_AUTOHEP: false
+DATAPLANE: CalicoIptables # Valid options can be any of CalicoIptables, CalicoBPF, CalicoVPP, CalicoNftables
+DATAPLANE_INTERFACE:
+ENABLE_BPF_DSR: false
+
+ENABLE_ENTERPRISE_COMPONENTS:  # comma separated list of enterprise components currently supported: compliance,packetcaptureapi
+ENABLE_MULTINICS: false
+
+ENABLE_EGRESS_GATEWAY: false  # used by aws-eks, aws-kubeadm and azr-aks only
+EGRESS_GATEWAY_IMAGE: gcr.io/unique-caldron-775/egress-ip:stable
+EGRESS_GATEWAY_FLAGS:  # number of elastic ips to create
+ADVERTISE_CLUSTER_IPS: false # set to "true" to advertise service cluster IP range (or ranges, if cluster is dual stack)
+ADVERTISE_EXTERNAL_IPS:  # comma separated list of external ips e.g x.x.x.x/16,y.y.y.y/32,2001:db8::1:0
+NUM_ADDON_PODS: 0  # Number of addon pods to create on system
+NUM_ADDON_FAKE_NODES: 0 # Number of fake addon (mock) nodes
+NuM_ADDON_FAKE_PODS: 0 # Number of fake addon (mock) pods
+NUM_NETWORK_POLICIES: 0  # Number of network policies to create on the system
+ENABLE_AWS_ALB: false  # used by aws-kubeadm only
+AWS_ALB_IMAGE: gcr.io/unique-caldron-775/aws-alb:stable
+FEDERATION_CONFIG:
+UPGRADE_CONFIG:  # currently only supports upgrades from calico to calico cloud
+
+# Source: stern:render-taskvars
+# This section contains configuration for stern (https://github.com/stern/stern)
+STERN_CHECK: 'ERROR' # Valid options "DISABLED" (Don't run stern at all), "INFO" (Run stern, check for errors at the end, but only log to stdout), "ERROR" (Run stern, check for errors at the end, if errors were found, add a failed test to the junit file)
+STERN_CONFIG: >
+  '{
+  "include": [
+    "ERROR",
+    "error",
+    "PANIC",
+    "panic"
+  ],
+  "exclude": [
+    [
+      "Reconciler error",
+      "tigera-operator"
+    ],
+    [
+      "apiserver received an error that is not an metav1.Status",
+      "-apiserver"
+    ],
+    [
+      "Creating internal dataplane driver",
+      "felix/int_dataplane.go"
+    ],
+    [
+      "Successfully loaded configuration",
+      "felix/daemon.go"
+    ],
+    [
+      "Make certificate verifier",
+      "status-reporter/tlsutils.go"
+    ],
+    [
+      "[INFO]",
+      ""
+    ],
+    [
+      "[WARNING]",
+      ""
+    ],
+    [
+      "GRPC error: <nil>",
+      "csi-node-driver"
+    ],
+    [
+      "http: TLS handshake error from",
+      "tigera-secure-es-gateway"
+    ],
+    [
+      "http2: server: error reading preface from client",
+      "-apiserver"
+    ],
+    [
+      "openshift-etcd",
+      "etcd-health-monitor"
+    ],
+    [
+      "[warn]",
+      "tigera-fluentd"
+    ],
+    [
+      "too old resource version",
+      "tigera-apiserver"
+    ]
+  ]
+  }'
+STERN_EXCLUDES: ''
+# Source: installer:render-calient-taskvars
+# This section contains configuration for CaliEnt
+STORAGE_CLASS_NAME: tigera-elasticsearch # DO NOT CHANGE for now
+STORAGE_PV_NAME: tigera-elasticsearch
+STORAGE_PV_CAPACITY: 10Gi # used by provisioners that create their own pv
+LICENSE_KEY_FILE: /home/lance/scratch/scale-services-per-cluster/.local/config/license.yaml
+CALIENT_UI_AUTH_TYPE: Token # Valid options are "Basic" (for *-kubeadm provisioners ONLY) or "Token"
+CALIENT_UI_USER: jane
+CALIENT_CLUSTER_ROLE: tigera-network-admin
+CALIENT_USER_NAMESPACE: default
+LOG_COLLECTOR_STORE:  # only "splunk" supported for now
+SPLUNK_ENDPOINT: https://splunk.eng.tigera.net
+SPLUNK_HEC_PORT: 8088 # splunk’s HTTP Event Collector port
+SPLUNK_HEC_TOKEN:  # splunk’s HTTP Event Collector token
+SPLUNK_PUBLIC_KEY:  # leave empty if not using splunk server with self signed cert
+# Source: operator:render-calient-taskvars
+# This section contains operator configuration for CaliEnt
+USE_PRIVATE_REGISTRY: false
+PRIVATE_REGISTRY: gcr.io/tigera-dev/banzai-registry
+PRIVATE_REGISTRY_IMAGE_PATH:
+CALIENT_CLUSTER_TYPE: Standalone # Valid options are "Standalone" (standard EE cluster), "Management" (shared management plane for managing EE clusters), "Managed" (EE cluster managed by management plane), "Minimal" (EE cluster w/ just essential pieces)
+CALIENT_MANAGEMENT_KUBECONFIG:  # update to absolute path to Manangement plane cluster if CALIENT_CLUSTER_TYPE == "Managed" or will be converted to Managed cluster
+CALIENT_MANAGEMENT_UI_USER: jane # used by Managed cluster
+CALIENT_MANAGEMENT_CONNECTION_TYPE: NodePort # used by Management cluster to allow connections to shared management plane
+CALIENT_ELASTIC_NAMESPACE: tigera-elasticsearch
+CALIENT_MANAGER_NAMESPACE: tigera-manager
+CALIENT_DEX_NAMESPACE: tigera-dex
+CALIENT_PROMETHEUS_NAMESPACE: tigera-prometheus
+# Source: tests:render-taskvars
+# This section contains configuration for all tests
+TEST_TYPE: k8s-e2e # Options: "k8s-e2e" (for k8s-e2e tests); "usage-reporting" (for usage reporting tests); "ui-e2e" (for ui-e2e tests); "ocp-cert" (for openshift certification tests); "scale-test" (for mini-scale tests); "benchmark" (for benchmarks)
+BENCHMARKS: all # Options: "all" to run all benchmarks; "throughput" to run throughput benchmarks; "benchmarker" to run the benchmarker tool
+# Source: k8s-e2e:render-taskvars
+# This section contains configuration for k8s tests
+K8S_E2E_IMAGE: gcr.io/unique-caldron-775/k8s-e2e:stable
+K8S_E2E_FLAGS: --ginkgo.focus=(\[calico\]|\[calient\])
+K8S_E2E_DOCKER_FLAGS: --env CLUSTER_NAME --env RELEASE_STREAM --env K8S_VERSION --env PROVISIONER --env PRODUCT --env DATAPLANE --env IP_FAMILY --env INSTALLER --env CALIENT_CLUSTER_TYPE --env ELASTIC_URI --env MANAGER_URI --env PROMETHEUS_URI
+K8S_E2E_DOCKER_EXTRA_FLAGS:
+# Source: usage-reporting:render-taskvars
+# This section contains configuration for usage-reporting tests
+USAGE_REPORTING_TEST_IMAGE: gcr.io/unique-caldron-775/banzai-tests/usage_reporting:stable
+USAGE_REPORTING_COUNTRY: GB
+USAGE_REPORTING_ACCESS_KEY_ID:
+USAGE_REPORTING_SECRET_ACCESS_KEY:
+USAGE_REPORTING_DOCKER_FLAGS: --env INSTALLER
+USAGE_REPORTING_DOCKER_EXTRA_FLAGS:
+# Source: ui-e2e:render-taskvars
+# This section contains configuration for UI tests
+UI_E2E_IMAGE: gcr.io/unique-caldron-775/manager-ui-e2e:stable
+SCALE_TEST_TTFP50_THRESHOLD: 0.5
+SCALE_TEST_TTFP99_THRESHOLD: 1.0
+SCALE_TEST_SPEC: /home/lance/scratch/scale-services-per-cluster/tests/scale-test/scripts/3n.yaml

@@ -1,0 +1,232 @@
+=== Calico Node Startup Time Measurement ===
+Namespace: calico-system
+Label Selector: k8s-app=calico-node
+Target Node: glen-bz-tlk3-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Acceptable Startup Time: 60s
+
+=== Collecting Cluster Information ===
+Kubernetes Version: v1.33.5
+
+=== Calico Configuration ===
+Dataplane Mode: Iptables
+Encapsulation Type: IPIP
+BGP Enabled: Enabled
+IP Pool CIDR: 192.168.0.0/16
+
+=== Cluster Scale Metrics ===
+Total NetworkPolicies: 150150
+Total Services: 1073
+Total Ready Nodes: 524
+
+=== Tigera Status ===
+
+Shortened Tigera Status:
+NAME                          AVAILABLE   PROGRESSING   DEGRADED   SINCE
+apiserver                     True        False         False      21h
+calico                        True        False         False      9m58s
+intrusion-detection           True        False         False      21h
+ippools                       True        False         False      21h
+log-collector                 True        False         False      21h
+log-storage                   True        False         False      21h
+log-storage-access            True        False         False      21h
+log-storage-dashboards        True        False         False      21h
+log-storage-elastic           True        False         False      21h
+log-storage-esmetrics         True        False         False      21h
+log-storage-kubecontrollers   True        False         False      21h
+log-storage-secrets           True        False         False      21h
+manager                       True        False         False      21h
+monitor                       True        False         False      21h
+policy-recommendation         True        False         False      21h
+tiers                         True        False         False      21h
+
+Full Tigera Status (YAML):
+      reason: AllObjectsAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-10-27T17:59:03Z"
+      message: All Objects Available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Progressing
+- apiVersion: operator.tigera.io/v1
+  kind: TigeraStatus
+  metadata:
+    creationTimestamp: "2025-10-27T17:57:13Z"
+    generation: 1
+    name: monitor
+    resourceVersion: "2591885"
+    uid: cde56f6d-bc2d-4564-a7c3-b5a0d4b48b17
+  spec: {}
+  status:
+    conditions:
+    - lastTransitionTime: "2025-10-28T14:49:29Z"
+      message: All Objects Available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Degraded
+    - lastTransitionTime: "2025-10-27T17:57:58Z"
+      message: All objects available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-10-27T17:57:58Z"
+      message: All Objects Available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Progressing
+- apiVersion: operator.tigera.io/v1
+  kind: TigeraStatus
+  metadata:
+    creationTimestamp: "2025-10-27T17:57:13Z"
+    generation: 1
+    name: policy-recommendation
+    resourceVersion: "5529"
+    uid: 412d4f23-b303-4b8f-9a49-9812207c35bb
+  spec: {}
+  status:
+    conditions:
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All Objects Available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Degraded
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All objects available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All Objects Available
+      observedGeneration: 1
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Progressing
+- apiVersion: operator.tigera.io/v1
+  kind: TigeraStatus
+  metadata:
+    creationTimestamp: "2025-10-27T17:57:13Z"
+    generation: 1
+    name: tiers
+    resourceVersion: "5530"
+    uid: 131c4b93-2857-4eca-9ced-4acc6003bce0
+  spec: {}
+  status:
+    conditions:
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All Objects Available
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Degraded
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All objects available
+      reason: AllObjectsAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2025-10-27T17:58:08Z"
+      message: All Objects Available
+      reason: AllObjectsAvailable
+      status: "False"
+      type: Progressing
+kind: List
+metadata:
+  resourceVersion: ""
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-p9vph
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-p9vph" deleted from default namespace
+Waiting for new load generator pod to be created...
+New load generator pod created: loadgenerator-59d7b7cc48-pb2dv
+Waiting for new load generator pod to be ready...
+pod/loadgenerator-59d7b7cc48-pb2dv condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-pb2dv
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-blbfp on node glen-bz-tlk3-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-blbfp...
+pod "calico-node-blbfp" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-tlk3-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-7g52z
+Pod created at: 2025-10-28T15:35:13Z (epoch: 1761665713)
+Waiting for pod calico-node-7g52z to become Ready...
+pod/calico-node-7g52z condition met
+
+========================================
+DaemonSet pod calico-node-7g52z became Ready in 65 seconds.
+Calico-node startup time: 65s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                168     0(0.00%) |     48      13    5018     17 |    1.30        0.00
+GET      /cart                                                                            171     0(0.00%) |     13      10      31     13 |    2.10        0.00
+POST     /cart                                                                            189     0(0.00%) |     18      14      58     18 |    3.70        0.00
+POST     /cart/checkout                                                                    66     0(0.00%) |     44      33     100     38 |    1.10        0.00
+GET      /product/0PUK6V6EV0                                                               72     0(0.00%) |     14      11      48     14 |    1.50        0.00
+GET      /product/1YMWWN1N4O                                                               88     0(0.00%) |     14      11      20     14 |    1.10        0.00
+GET      /product/2ZYFJ3GM2N                                                               99     0(0.00%) |     14      11     113     14 |    2.00        0.00
+GET      /product/66VCHSJNUP                                                               99     0(0.00%) |     15      11     111     14 |    2.00        0.00
+GET      /product/6E92ZMYYFZ                                                               89     0(0.00%) |     14      11      53     14 |    0.80        0.00
+GET      /product/9SIQT8TOJO                                                               77     0(0.00%) |     14      11      37     14 |    1.30        0.00
+GET      /product/L9ECAV7KIM                                                              112     0(0.00%) |     15      11      48     14 |    1.30        0.00
+GET      /product/LS4PSXUNUM                                                               90     0(0.00%) |     14      11      46     14 |    1.30        0.00
+GET      /product/OLJCESPC7Z                                                               74     0(0.00%) |     16      11      90     14 |    1.20        0.00
+POST     /setCurrency                                                                     123     0(0.00%) |     17      14      29     17 |    2.10        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1517     0(0.00%) |     20      10    5018     15 |   22.80        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                171     0(0.00%) |     47      13    5018     17 |    0.60        0.00
+GET      /cart                                                                            178     0(0.00%) |     13      10      31     13 |    2.20        0.00
+POST     /cart                                                                            195     0(0.00%) |     18      14      59     18 |    3.80        0.00
+POST     /cart/checkout                                                                    68     0(0.00%) |     45      33     100     38 |    1.00        0.00
+GET      /product/0PUK6V6EV0                                                               75     0(0.00%) |     14      11      48     14 |    1.40        0.00
+GET      /product/1YMWWN1N4O                                                               91     0(0.00%) |     14      11      20     14 |    1.40        0.00
+GET      /product/2ZYFJ3GM2N                                                              101     0(0.00%) |     14      11     113     14 |    1.90        0.00
+GET      /product/66VCHSJNUP                                                              101     0(0.00%) |     15      11     111     14 |    1.70        0.00
+GET      /product/6E92ZMYYFZ                                                               93     0(0.00%) |     14      11      53     14 |    1.10        0.00
+GET      /product/9SIQT8TOJO                                                               78     0(0.00%) |     14      11      37     13 |    1.30        0.00
+GET      /product/L9ECAV7KIM                                                              112     0(0.00%) |     15      11      48     14 |    1.30        0.00
+GET      /product/LS4PSXUNUM                                                               91     0(0.00%) |     14      11      46     14 |    1.10        0.00
+GET      /product/OLJCESPC7Z                                                               79     0(0.00%) |     16      11      90     14 |    1.30        0.00
+POST     /setCurrency                                                                     125     0(0.00%) |     17      14      29     17 |    2.20        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1558     0(0.00%) |     20      10    5018     15 |   22.30        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: gcp-kubeadm
+  Total Ready Nodes: 524
+
+Calico Configuration:
+  Dataplane Mode: Iptables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 150150
+  Total Services: 1073
+
+Performance:
+  Calico-node startup time: 65s
+  Pod-to-Pod Median Latency (ms): 15
+15ms
+========================================
+
+❌ FAILURE: calico-node-7g52z startup took too long (65 seconds) and failed to meet 60 second startup time requirement.
+Stream closed EOF for default/calico-test-run-10k-standing-140k-live-policies-iptables-9l79j (tester)

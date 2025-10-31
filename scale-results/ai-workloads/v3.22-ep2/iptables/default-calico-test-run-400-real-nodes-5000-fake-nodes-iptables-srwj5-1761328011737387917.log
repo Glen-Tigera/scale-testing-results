@@ -1,0 +1,111 @@
+=== Calico Node Startup Time Measurement ===
+Namespace: calico-system
+Label Selector: k8s-app=calico-node
+Target Node: glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Acceptable Startup Time: 60s
+
+=== Collecting Cluster Information ===
+Kubernetes Version: v1.33.5
+
+=== Calico Configuration ===
+Dataplane Mode: Iptables
+Encapsulation Type: IPIP
+BGP Enabled: Enabled
+IP Pool CIDR: 192.168.0.0/14
+
+=== Cluster Scale Metrics ===
+Total NetworkPolicies: 10020
+Total Services: 1033
+Total Nodes: 5404
+
+=== Restarting Load Generator ===
+Found load generator pod: loadgenerator-59d7b7cc48-qh57k
+Deleting load generator pod to clear stats...
+pod "loadgenerator-59d7b7cc48-qh57k" deleted from default namespace
+Waiting for new load generator pod...
+pod/loadgenerator-59d7b7cc48-m82jn condition met
+New load generator pod ready: loadgenerator-59d7b7cc48-m82jn
+
+=== Starting Calico Node Restart Test ===
+Found pod: calico-node-tn497 on node glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal
+Deleting pod calico-node-tn497...
+pod "calico-node-tn497" deleted from calico-system namespace
+Waiting for new pod on node glen-bz-wr2x-kadm-node-0.us-central1-a.c.tigera-dev.internal...
+New pod detected: calico-node-hjjgb
+Pod created at: 2025-10-24T17:45:11Z (epoch: 1761327911)
+Waiting for pod calico-node-hjjgb to become Ready...
+pod/calico-node-hjjgb condition met
+
+========================================
+DaemonSet pod calico-node-hjjgb became Ready in 35 seconds.
+Calico-node startup time: 35s
+========================================
+
+=== Waiting for Load Generator Statistics ===
+Waiting 30 seconds for load generator to accumulate stats...
+
+=== Load Generator Pod-to-Pod Latency Statistics ===
+Defaulted container "main" out of: main, frontend-check (init)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                164     0(0.00%) |     22      14      93     18 |    0.80        0.00
+GET      /cart                                                                            223     0(0.00%) |     23      14      93     19 |    4.10        0.00
+POST     /cart                                                                            193     0(0.00%) |     42      22     177     27 |    2.00        0.00
+POST     /cart/checkout                                                                    65     0(0.00%) |     83      49     198     75 |    0.80        0.00
+GET      /product/0PUK6V6EV0                                                              103     0(0.00%) |     23      17      96     20 |    1.40        0.00
+GET      /product/1YMWWN1N4O                                                              100     0(0.00%) |     26      16     126     20 |    1.30        0.00
+GET      /product/2ZYFJ3GM2N                                                              106     0(0.00%) |     28      17     119     20 |    1.20        0.00
+GET      /product/66VCHSJNUP                                                               77     0(0.00%) |     25      16      82     20 |    0.90        0.00
+GET      /product/6E92ZMYYFZ                                                               92     0(0.00%) |     23      17      72     20 |    0.90        0.00
+GET      /product/9SIQT8TOJO                                                               81     0(0.00%) |     25      17     118     20 |    1.30        0.00
+GET      /product/L9ECAV7KIM                                                               82     0(0.00%) |     25      16     120     20 |    1.20        0.00
+GET      /product/LS4PSXUNUM                                                               82     0(0.00%) |     26      17     109     20 |    1.30        0.00
+GET      /product/OLJCESPC7Z                                                               99     0(0.00%) |     24      17      90     20 |    1.10        0.00
+POST     /setCurrency                                                                     133     0(0.00%) |     24      16      92     19 |    1.80        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1600     0(0.00%) |     29      14     198     20 |   20.10        0.00
+
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /                                                                                167     0(0.00%) |     22      13      93     18 |    0.70        0.00
+GET      /cart                                                                            226     0(0.00%) |     23      14     127     19 |    4.10        0.00
+POST     /cart                                                                            197     0(0.00%) |     42      22     177     28 |    2.60        0.00
+POST     /cart/checkout                                                                    66     0(0.00%) |     82      49     198     74 |    1.10        0.00
+GET      /product/0PUK6V6EV0                                                              107     0(0.00%) |     23      17      96     20 |    1.80        0.00
+GET      /product/1YMWWN1N4O                                                              101     0(0.00%) |     26      16     126     20 |    1.30        0.00
+GET      /product/2ZYFJ3GM2N                                                              110     0(0.00%) |     27      17     119     20 |    1.70        0.00
+GET      /product/66VCHSJNUP                                                               79     0(0.00%) |     24      16      82     20 |    1.10        0.00
+GET      /product/6E92ZMYYFZ                                                               93     0(0.00%) |     23      17      72     20 |    1.20        0.00
+GET      /product/9SIQT8TOJO                                                               85     0(0.00%) |     26      17     118     20 |    1.50        0.00
+GET      /product/L9ECAV7KIM                                                               86     0(0.00%) |     26      16     120     20 |    1.00        0.00
+GET      /product/LS4PSXUNUM                                                               84     0(0.00%) |     26      17     109     20 |    1.70        0.00
+GET      /product/OLJCESPC7Z                                                              102     0(0.00%) |     24      17      90     20 |    1.10        0.00
+POST     /setCurrency                                                                     137     0(0.00%) |     24      16     111     19 |    2.10        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      1640     0(0.00%) |     29      13     198     20 |   23.00        0.00
+
+========================================
+TEST RESULTS SUMMARY
+========================================
+Cluster Information:
+  Kubernetes Version: v1.33.5
+  Provisioner: 
+  Total Nodes: 5404
+
+Calico Configuration:
+  Dataplane Mode: Iptables
+  Encapsulation: IPIP
+  BGP Enabled: Enabled
+
+Cluster Scale:
+  Total NetworkPolicies: 10020
+  Total Services: 1033
+
+Performance:
+  Calico-node startup time: 35s
+  Pod-to-Pod Median Latency: 20
+20ms
+========================================
+
+✅ SUCCESS: calico-node-hjjgb startup time is within the acceptable range (35 seconds < 60s)
+Stream closed EOF for default/calico-test-run-400-real-nodes-5000-fake-nodes-iptables-srwj5 (tester)

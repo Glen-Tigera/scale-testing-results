@@ -1,0 +1,492 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-provider-ttfp-tester
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-provider-ttfp-tester
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "delete", "watch"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["services", "nodes"]
+  verbs: ["get", "list", "create", "delete"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list"]
+- apiGroups: ["operator.tigera.io"]
+  resources: ["installations", "tigerastatuses"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-provider-ttfp-tester
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-provider-ttfp-tester
+subjects:
+- kind: ServiceAccount
+  name: platform-provider-ttfp-tester
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-provider-ttfp-scripts
+  namespace: default
+data:
+  example.yaml: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        svc: nginx
+      name: test-svc-9999
+      namespace: addon-live-policies
+    spec:
+      selector:
+        svc: nginx
+      ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 80
+    ---
+  add-more.sh: |
+    #!/bin/bash
+    set -ex
+    NUM_TO_ACTION="${1:-1000}"
+    THREADS="${2:-10}"
+    ACTION="${3:-apply}"
+
+    NUM=$(kubectl get svc -A | grep "test-svc" | wc -l)
+
+    if [ "$ACTION" == "delete" ]; then
+      seq "$NUM" -1 $((NUM-NUM_TO_ACTION-1)) | xargs -P "${THREADS}" -I _ sh -c "kubectl delete svc -n addon-live-policies test-svc-_"
+    elif [ "$ACTION" == "apply" ]; then
+      seq "$NUM" $((NUM+NUM_TO_ACTION-1)) | xargs -P "${THREADS}" -I _ sh -c "sed 's/9999/_/' /scripts/example.yaml | kubectl apply -f -"
+    fi
+  measure_calico_node_pod_startup.sh: |
+    #!/bin/bash
+    set -e
+
+    # Configuration
+    export NAMESPACE="${NAMESPACE:-calico-system}"
+    export LABEL_SELECTOR="${LABEL_SELECTOR:-k8s-app=calico-node}"
+    export NODE_NAME="${NODE_NAME}"
+    export ACCEPTABLE_START_UP_TIME="${ACCEPTABLE_START_UP_TIME:-60}"
+    export LOADGEN_NAMESPACE="${LOADGEN_NAMESPACE:-default}"
+
+    # Validate NODE_NAME is set
+    if [ -z "$NODE_NAME" ]; then
+      echo "ERROR: NODE_NAME environment variable must be set"
+      exit 1
+    fi
+
+    echo "=== Calico Node Startup Time Measurement ==="
+    echo "Namespace: $NAMESPACE"
+    echo "Label Selector: $LABEL_SELECTOR"
+    echo "Target Node: $NODE_NAME"
+    echo "Acceptable Startup Time: ${ACCEPTABLE_START_UP_TIME}s"
+    echo ""
+
+    # ============================================
+    # Collect Cluster Information
+    # ============================================
+    echo "=== Collecting Cluster Information ==="
+    
+    # Kubernetes Version
+    K8S_VERSION=$(kubectl version -o json 2>/dev/null | jq -r '.serverVersion.gitVersion' || echo "Unknown")
+    echo "Kubernetes Version: $K8S_VERSION"
+    
+    # Calico Configuration from Installation Resource
+    echo ""
+    echo "=== Calico Configuration ==="
+    INSTALLATION=$(kubectl get installation default -o json 2>/dev/null || echo "")
+    if [ -n "$INSTALLATION" ]; then
+      DATAPLANE_MODE=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.linuxDataplane // "Iptables"')
+      ENCAPSULATION=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].encapsulation // "Unknown"')
+      BACKEND=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.bgp // "Unknown"')
+      IP_POOL_CIDR=$(echo "$INSTALLATION" | jq -r '.spec.calicoNetwork.ipPools[0].cidr // "Unknown"')
+      
+      echo "Dataplane Mode: $DATAPLANE_MODE"
+      echo "Encapsulation Type: $ENCAPSULATION"
+      echo "BGP Enabled: $BACKEND"
+      echo "IP Pool CIDR: $IP_POOL_CIDR"
+    else
+      echo "Dataplane Mode: Unable to retrieve (no Installation resource found)"
+      DATAPLANE_MODE="Unknown"
+      ENCAPSULATION="Unknown"
+      BACKEND="Unknown"
+    fi
+    
+    echo ""
+    echo "=== Cluster Scale Metrics ==="
+    
+    TOTAL_NETWORK_POLICIES=$(kubectl get networkpolicies --all-namespaces -o json | jq '.items | length')
+    echo "Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
+    
+    TOTAL_SERVICES=$(kubectl get services --all-namespaces -o json | jq '.items | length')
+    echo "Total Services: $TOTAL_SERVICES"
+    
+    TOTAL_NODES=$(kubectl get nodes --no-headers | grep " Ready " | wc -l)
+    echo "Total Ready Nodes: $TOTAL_NODES"
+
+    echo ""
+    echo "=== Tigera Status ==="
+    echo ""
+    echo "Shortened Tigera Status:"
+    kubectl get tigerastatus 2>/dev/null || echo "Unable to retrieve tigerastatus (may not be installed)"
+    echo ""
+    echo "Full Tigera Status (YAML):"
+    kubectl get tigerastatus -o yaml 2>/dev/null || echo "Unable to retrieve tigerastatus (may not be installed)"
+    
+    echo ""
+    # ============================================
+    # Calico Node Pod Restart Test
+    # ============================================
+    echo "=== Starting Calico Node Restart Test ==="
+    
+    # Find the pod running on the specified node
+    OLD_POD=$(kubectl get pods -n $NAMESPACE -l "$LABEL_SELECTOR" -o json | jq -r ".items[] | select(.spec.nodeName==\"$NODE_NAME\") | .metadata.name")
+    if [ -z "$OLD_POD" ]; then
+      echo "ERROR: No DaemonSet pod found on node $NODE_NAME"
+      exit 1
+    fi
+
+    echo "Found pod: $OLD_POD on node $NODE_NAME"
+    echo "Deleting pod $OLD_POD..."
+    kubectl delete pod $OLD_POD -n $NAMESPACE
+
+    # Wait for a new pod to appear on the same node
+    echo "Waiting for new pod on node $NODE_NAME..."
+    while true; do
+      NEW_POD=$(kubectl get pods -n $NAMESPACE -l "$LABEL_SELECTOR" -o json | jq -r ".items[] | select(.spec.nodeName==\"$NODE_NAME\") | .metadata.name")
+      if [[ "$NEW_POD" != "$OLD_POD" && -n "$NEW_POD" ]]; then
+        echo "New pod detected: $NEW_POD"
+        break
+      fi
+      sleep 1
+    done
+
+    # Get the new pod creation time
+    START_TIME=$(kubectl get pod $NEW_POD -n $NAMESPACE -o jsonpath="{.metadata.creationTimestamp}")
+    START_EPOCH=$(date -d "$START_TIME" +%s)
+    echo "Pod created at: $START_TIME (epoch: $START_EPOCH)"
+
+    # Wait for pod to be Ready
+    echo "Waiting for pod $NEW_POD to become Ready..."
+    kubectl wait --for=condition=Ready pod/$NEW_POD -n $NAMESPACE --timeout=300s
+
+    READY_EPOCH=$(date +%s)
+    DURATION=$((READY_EPOCH - START_EPOCH))
+
+    echo ""
+    echo "========================================"
+    echo "DaemonSet pod $NEW_POD became Ready in $DURATION seconds."
+    echo "Calico-node startup time: ${DURATION}s"
+    echo "========================================"
+    echo ""
+
+    # ============================================
+    # Final Results
+    # ============================================
+    echo "========================================"
+    echo "CALICO NODE STARTUP TEST RESULTS"
+    echo "========================================"
+    echo "Cluster Information:"
+    echo "  Kubernetes Version: $K8S_VERSION"
+    echo "  Total Ready Nodes: $TOTAL_NODES"
+    echo ""
+    echo "Calico Configuration:"
+    echo "  Dataplane Mode: $DATAPLANE_MODE"
+    echo "  Encapsulation: $ENCAPSULATION"
+    echo "  BGP Enabled: $BACKEND"
+    echo ""
+    echo "Cluster Scale:"
+    echo "  Total NetworkPolicies: $TOTAL_NETWORK_POLICIES"
+    echo "  Total Services: $TOTAL_SERVICES"
+    echo ""
+    echo "Performance:"
+    echo "  Calico-node startup time: ${DURATION}s"
+    echo "========================================"
+    echo ""
+
+    if [ $DURATION -ge $ACCEPTABLE_START_UP_TIME ]; then
+      echo "❌ FAILURE: $NEW_POD startup took too long ($DURATION seconds) and failed to meet $ACCEPTABLE_START_UP_TIME second startup time requirement."
+      exit 1
+    else
+      echo "✅ SUCCESS: $NEW_POD startup time is within the acceptable range ($DURATION seconds < ${ACCEPTABLE_START_UP_TIME}s)"
+      exit 0
+    fi
+  test.sh: |
+    #!/bin/bash
+    set -e
+    
+    # Service endpoints (using cluster DNS)
+    STO_ENDPOINT="http://test-operator.sto-system.svc.cluster.local:80"
+    PROM_ENDPOINT="http://prometheus-client.sto-system.svc.cluster.local:9090"
+    
+    # Function to scale services to target number
+    scale_services() {
+        local target_services=$1
+        local threads="${2:-10}"
+        
+        echo "=== Scaling Services to ${target_services} ==="
+        
+        # Get current service count
+        local current_count=$(kubectl get svc -n addon-live-policies | grep "test-svc-" | wc -l)
+        echo "Current service count: ${current_count}"
+        echo "Target service count: ${target_services}"
+        
+        if [ $current_count -eq $target_services ]; then
+            echo "Already at target service count"
+            return 0
+        elif [ $current_count -lt $target_services ]; then
+            # Need to add services
+            local to_add=$((target_services - current_count))
+            echo "Adding ${to_add} services..."
+            cd /scripts && ./add-more.sh ${to_add} ${threads} apply && cd -
+        else
+            # Need to remove services
+            local to_remove=$((current_count - target_services))
+            echo "Removing ${to_remove} services..."
+            cd /scripts && ./add-more.sh ${to_remove} ${threads} delete && cd -
+        fi
+        
+        # Verify final count
+        local final_count=$(kubectl get svc -n addon-live-policies | grep "test-svc-" | wc -l)
+        echo "Final service count: ${final_count}"
+    }
+    
+    # Configuration
+    ACCEPTABLE_TTFP_TIME="${ACCEPTABLE_TTFP_TIME:-4}" # 4 seconds
+    
+    # Check if NUM_SERVICES is set (single test mode) or use iteration mode
+    if [ -n "$NUM_SERVICES" ]; then
+        # Single test mode with specific number of services
+        SERVICES_TO_TEST="$NUM_SERVICES"
+        echo "Running in single test mode with ${NUM_SERVICES} services"
+    else
+        # Iteration mode - test range of service counts
+        INTERVAL="${INTERVAL:-1000}" # Number of services to be created in each iteration
+        START_ITER="${START_ITER:-1}" # Starting iteration (1 = 1k services)
+        END_ITER="${END_ITER:-5}" # Ending iteration (5 = 5k services)
+        SERVICES_TO_TEST=$(seq ${START_ITER} $((INTERVAL/1000)) ${END_ITER} | xargs)
+        echo "Running in iteration mode: ${SERVICES_TO_TEST}"
+    fi
+    
+    for i in $SERVICES_TO_TEST; do
+        # Determine actual service count
+        if [ -n "$NUM_SERVICES" ]; then
+            CURRENT_TEST_SERVICES=${NUM_SERVICES}
+            TEST_LABEL="${NUM_SERVICES}-svc"
+        else
+            CURRENT_TEST_SERVICES=$((i * 1000))
+            TEST_LABEL="${i}k-svc"
+        fi
+        
+        echo "================================================================="
+        echo "Starting TTFP test with ${CURRENT_TEST_SERVICES} services..."
+        echo "================================================================="
+        
+        # Teardown previous test
+        echo "Calling teardown endpoint..."
+        curl -f "${STO_ENDPOINT}/teardown" || echo "Teardown endpoint not available"
+        
+        # Scale to target service count
+        scale_services ${CURRENT_TEST_SERVICES}
+        
+        # Clean up pods
+        kubectl delete po -l app=loadgenerator --ignore-not-found=true
+        kubectl delete pod -n sto-system -l prometheus=push-gateway --ignore-not-found=true
+        kubectl delete pod -n sto-system prometheus-client-0 --ignore-not-found=true
+        
+        sleep 120
+        
+        # Start test
+        echo "Calling start endpoint..."
+        curl -f "${STO_ENDPOINT}/start" || echo "Start endpoint not available"
+        
+        sleep 180
+        
+        # Collect load generator logs
+        kubectl logs -l app=loadgenerator --tail 1000 > /results/${TEST_LABEL}.log 2>&1 || echo "No loadgenerator logs available"
+        
+        # Get TTFP metrics from Prometheus
+        TTFP_VALUE="N/A"
+        for attempt in {1..5}; do
+            echo "Attempt $attempt of 5 to get TTFP 99th percentile TTFP_VALUE..."
+            TTFP_RESULT=$(curl -s "${PROM_ENDPOINT}/api/v1/query?query=ttfp_quantile%7Bquantile%3D%220.99%22%7D" | jq -r '.data.result[0].value[1] // "null"')
+            
+            if [ "$TTFP_RESULT" != "null" ]; then
+                TTFP_VALUE="$TTFP_RESULT"
+                echo "TTFP 99th percentile: ${TTFP_VALUE}s" | tee -a "/results/${TEST_LABEL}.log"
+                fail=$(echo "$TTFP_VALUE >= $ACCEPTABLE_TTFP_TIME" | bc)
+                if [ "$fail" -eq 1 ]; then
+                    echo "ERROR: TTFP took too long ($TTFP_VALUE seconds) and failed to meet under $ACCEPTABLE_TTFP_TIME second TTFP." | tee -a "/results/${TEST_LABEL}.log"
+                    exit 1
+                else
+                    echo "SUCCESS: TTFP startup time is within the acceptable range ($TTFP_VALUE seconds)" | tee -a "/results/${TEST_LABEL}.log"
+                    break
+                fi
+            else
+                if [ $attempt -eq 5 ]; then
+                    echo "Failed to get TTFP 99th percentile value after 5 attempts" | tee -a "/results/${TEST_LABEL}.log"
+                    echo "Continuing without TTFP validation..."
+                    TTFP_VALUE="N/A (failed to retrieve)"
+                    break
+                fi
+                echo "Attempt $attempt: Found null TTFP value" | tee -a "/results/${TEST_LABEL}.log"
+                sleep 5
+            fi
+        done
+        
+        # Record calico-node startup time
+        if [ -n "$NODE_NAME" ]; then
+          echo "=== Recording calico-node startup time ===" | tee -a "/results/${TEST_LABEL}.log"
+          
+          # Run with better error handling and output visibility
+          set +e  # Temporarily disable exit on error
+          /scripts/measure_calico_node_pod_startup.sh 2>&1 | tee -a "/results/${TEST_LABEL}.log"
+          CALICO_EXIT_CODE=$?
+          set -e  # Re-enable exit on error
+          
+          if [ $CALICO_EXIT_CODE -eq 0 ]; then
+            echo "=== Calico-node startup time recorded successfully ===" | tee -a "/results/${TEST_LABEL}.log"
+          else
+            echo "WARNING: Calico-node startup measurement failed with exit code $CALICO_EXIT_CODE" | tee -a "/results/${TEST_LABEL}.log"
+            echo "Continuing with test..."
+          fi
+        else
+          echo "NODE_NAME not set, skipping calico-node startup measurement" | tee -a "/results/${TEST_LABEL}.log"
+        fi
+        
+        # Print Summary
+        echo "" | tee -a "/results/${TEST_LABEL}.log"
+        echo "========================================" | tee -a "/results/${TEST_LABEL}.log"
+        echo "TEST SUMMARY" | tee -a "/results/${TEST_LABEL}.log"
+        echo "========================================" | tee -a "/results/${TEST_LABEL}.log"
+        echo "Service Count: ${CURRENT_TEST_SERVICES}" | tee -a "/results/${TEST_LABEL}.log"
+        echo "TTFP 99th Percentile: ${TTFP_VALUE}s" | tee -a "/results/${TEST_LABEL}.log"
+        echo "Acceptable TTFP Time: ${ACCEPTABLE_TTFP_TIME}s" | tee -a "/results/${TEST_LABEL}.log"
+        echo "========================================" | tee -a "/results/${TEST_LABEL}.log"
+        echo "" | tee -a "/results/${TEST_LABEL}.log"
+        
+        echo "================================================================="
+        echo "Ended TTFP test with ${CURRENT_TEST_SERVICES} services..."
+        echo "================================================================="
+        
+        # Copy results to stdout so they appear in pod logs
+        echo ""
+        echo "=== Test Results for ${CURRENT_TEST_SERVICES} services ==="
+        cat "/results/${TEST_LABEL}.log"
+        echo "=== End Results ==="
+        echo ""
+        
+        sleep 30
+    done
+    
+    echo "All TTFP tests completed successfully!"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: platform-provider-ttfp-test
+  namespace: default
+spec:
+  # Schedule: This is suspended by default, so it won't run automatically
+  # To trigger manually: kubectl create job <name> --from=cronjob/platform-provider-ttfp-test
+  schedule: "0 0 * * 0"  # Weekly on Sunday at midnight (only used if suspend is set to false)
+  suspend: true  # Set to false to enable automatic scheduled runs
+  successfulJobsHistoryLimit: 3  # Keep last 3 successful jobs
+  failedJobsHistoryLimit: 3      # Keep last 3 failed jobs
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 86400  # Job and pods will be automatically deleted 1 day after completion
+      template:
+        metadata:
+          labels:
+            app: platform-provider-ttfp-test
+        spec:
+          serviceAccountName: platform-provider-ttfp-tester
+          restartPolicy: Never
+          containers:
+          - name: tester
+            image: alpine/k8s:1.28.3
+            command: ["/bin/bash"]
+            args: 
+            - "-c"
+            - |
+              set -e
+              echo "Installing required packages..."
+              # Try multiple mirrors with retries
+              for i in {1..3}; do
+                echo "Attempt $i: Installing packages..."
+                if apk add --no-cache curl jq bc bash coreutils; then
+                  echo "Packages installed successfully"
+                  break
+                elif [ $i -eq 3 ]; then
+                  echo "ERROR: Failed to install packages after 3 attempts"
+                  exit 1
+                else
+                  echo "Installation failed, retrying in 5 seconds..."
+                  sleep 5
+                fi
+              done
+              /scripts/test.sh
+            env:
+            # OPTIONAL: Set NODE_NAME for calico-node startup testing
+            - name: NODE_NAME
+              value: "glen-bz-iir5-kadm-node-0.us-central1-a.c.tigera-dev.internal"  # CHANGE THIS to your target node name for calico-node testing
+            # Test configuration - Choose ONE mode:
+            # MODE 1: Set NUM_SERVICES for single test with specific count
+            # - name: NUM_SERVICES
+            #   value: ""  # e.g., "5000" for 5k services. Leave empty for iteration mode.
+            # MODE 2: Iteration mode (used when NUM_SERVICES is empty)
+            - name: INTERVAL
+              value: "2000"  # Number of services to add per iteration
+            - name: START_ITER
+              value: "26"  # Start at 1k services
+            - name: END_ITER
+              value: "60"  # End at 5k services
+            - name: ACCEPTABLE_TTFP_TIME
+              value: "4"  # 4 seconds
+            # Calico node test configuration
+            - name: NAMESPACE
+              value: "calico-system"
+            - name: LABEL_SELECTOR
+              value: "k8s-app=calico-node"
+            - name: ACCEPTABLE_START_UP_TIME
+              value: "60"
+            - name: LOADGEN_NAMESPACE
+              value: "default"
+            volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            - name: results
+              mountPath: /results
+          volumes:
+          - name: scripts
+            configMap:
+              name: platform-provider-ttfp-scripts
+              defaultMode: 0755
+          - name: results
+            emptyDir: {}
+
